@@ -411,6 +411,30 @@ const HeroSection = () => {
 
                 </motion.div>
             </div>
+
+            {/* ── Bottom blur-fade transition into next section ── */}
+            {/* Layer 1: colour gradient — hero bg fades to the gallery's bg colour */}
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 z-20"
+                style={{
+                    background:
+                        "linear-gradient(to bottom, transparent 0%, #f8fafc 100%)",
+                }}
+            />
+            {/* Layer 2: blurred glass — intensity increases toward the bottom edge */}
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute bottom-0 left-0 right-0 h-36 z-20"
+                style={{
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
+                    maskImage:
+                        "linear-gradient(to bottom, transparent 0%, black 100%)",
+                    WebkitMaskImage:
+                        "linear-gradient(to bottom, transparent 0%, black 100%)",
+                }}
+            />
         </section>
     );
 };
