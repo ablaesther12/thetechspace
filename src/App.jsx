@@ -8,29 +8,30 @@ import Services from './pages/Services'
 import Team from './pages/Team'
 import BlogPage from './pages/Blogs'
 import Contact from './pages/Contact'
+import ProjectsPage from './pages/Projects'
+import ProjectDetail from './pages/ProjectDetail'
 
 function App() {
-  
+
 
   return (
-   <div>
-    <BrowserRouter>
-    <Routes>
-      <Route path='/' element={<RootLayout />}>
-      <Route index={true} element={<Home/>} />
-      <Route path='/about' element={<About />} />
-      <Route path='/services' element={<Services />} />
-      <Route path='/team' element= {<Team />} />
-      <Route path='/blogs' element= {<BlogPage />} />
-      <Route path='/contact' element= {<Contact />} />
-      
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<RootLayout />}>
+            <Route index={true} element={<Home />} />
+            <Route path='/about' element={<About />} />
+            <Route path='/services' element={<Services />} />
+            <Route path='/team' element={<Team />} />
+            <Route path='/blogs' element={<BlogPage />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/projects' element={<ProjectsPage />} />
+            <Route path='/projects/:id' element={<ProjectDetail />} />
+          </Route>
+        </Routes>
 
-
-      </Route>
-    </Routes>
-
-    </BrowserRouter>
-   </div>
+      </BrowserRouter>
+    </div>
   )
 }
 
