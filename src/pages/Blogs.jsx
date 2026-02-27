@@ -1,229 +1,244 @@
-import { Calendar, User, ArrowRight, Search } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { Link } from "react-router";
+import { ArrowRight, User, Calendar } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { blogPosts } from "../data/blogsData";
 
+gsap.registerPlugin(ScrollTrigger);
 
-export default function BlogPage() {
-  const blogPosts = [
-    {
-      title: "10 Web Design Trends That Will Dominate 2024",
-      excerpt:
-        "Discover the latest web design trends that are shaping the digital landscape and how to implement them in your projects.",
-      category: "Design",
-      author: "Alex Johnson",
-      date: "Dec 15, 2023",
-      readTime: "5 min read",
-      featured: true,
-    },
-    {
-      title: "The Complete Guide to SEO for Small Businesses",
-      excerpt: "Learn how to optimize your website for search engines and drive more organic traffic to your business.",
-      category: "SEO",
-      author: "Sarah Chen",
-      date: "Dec 12, 2023",
-      readTime: "8 min read",
-      featured: false,
-    },
-    {
-      title: "Why Your Business Needs a Mobile-First Website",
-      excerpt:
-        "Understanding the importance of mobile-first design and how it impacts user experience and conversions.",
-      category: "Development",
-      author: "Marcus Rodriguez",
-      date: "Dec 10, 2023",
-      readTime: "6 min read",
-      featured: false,
-    },
-    {
-      title: "Building Brand Identity: A Designer's Perspective",
-      excerpt: "The essential elements of creating a strong brand identity that resonates with your target audience.",
-      category: "Branding",
-      author: "Lisa Thompson",
-      date: "Dec 8, 2023",
-      readTime: "7 min read",
-      featured: false,
-    },
-    {
-      title: "The Psychology of Color in Web Design",
-      excerpt: "How color choices affect user behavior and conversion rates on your website.",
-      category: "Design",
-      author: "Alex Johnson",
-      date: "Dec 5, 2023",
-      readTime: "4 min read",
-      featured: false,
-    },
-    {
-      title: "Optimizing Website Performance: A Technical Guide",
-      excerpt: "Advanced techniques for improving website speed and performance for better user experience.",
-      category: "Development",
-      author: "David Kim",
-      date: "Dec 3, 2023",
-      readTime: "10 min read",
-      featured: false,
-    },
-  ];
+// ─── Category badge color map ─────────────────────────────────────────────────
+const categoryStyles = {
+  violet: {
+    bg: "bg-violet-500",
+    text: "text-white",
+    border: "border-violet-200",
+    light: "bg-violet-50 text-violet-700",
+  },
+  cyan: {
+    bg: "bg-cyan-500",
+    text: "text-white",
+    border: "border-cyan-200",
+    light: "bg-cyan-50 text-cyan-700",
+  },
+  emerald: {
+    bg: "bg-emerald-500",
+    text: "text-white",
+    border: "border-emerald-200",
+    light: "bg-emerald-50 text-emerald-700",
+  },
+};
 
-  const categories = ["All", "Design", "Development", "SEO", "Branding"];
+// ─── Blog Card ────────────────────────────────────────────────────────────────
+const BlogCard = ({ post, index }) => {
+  const style = categoryStyles[post.categoryColor] || categoryStyles.violet;
 
   return (
-    <div className="min-h-screen bg-white">
-      
+    <Link
+      to={`/blogs/${post.slug}`}
+      className="gs-animate group block rounded-2xl bg-white border border-slate-200/80 overflow-hidden transition-[box-shadow,transform] duration-300 hover:shadow-2xl hover:shadow-slate-200/60 hover:-translate-y-2"
+    >
+      {/* Image */}
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <img
+          src={post.image}
+          alt={post.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          loading="lazy"
+          decoding="async"
+        />
+        {/* Category badge */}
+        <div className="absolute top-4 right-4">
+          <span
+            className={`inline-block ${style.bg} ${style.text} text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide`}
+          >
+            {post.category}
+          </span>
+        </div>
+        {/* Bottom gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
 
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <span className="inline-block mb-6 bg-blue-100 text-blue-800 border border-blue-200 px-3 py-1 rounded-full text-sm font-medium">
-              Our Blog
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Insights & Inspiration</h1>
-            <p className="text-xl text-slate-600 mb-8">
-              Stay  updated with the latest trends, tips, and insights from the world of design and development.
+      {/* Content */}
+      <div className="p-5 pb-6">
+        {/* Author + Date row */}
+        <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center">
+              <User className="w-3 h-3 text-slate-500" />
+            </div>
+            <span className="font-medium text-slate-500">{post.author}</span>
+          </div>
+          <span className="text-slate-300">·</span>
+          <span>{post.date}</span>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-lg font-bold text-slate-900 leading-snug mb-2 group-hover:text-violet-600 transition-colors duration-300">
+          {post.title}
+        </h3>
+
+        {/* Excerpt */}
+        <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">
+          {post.excerpt}
+        </p>
+      </div>
+    </Link>
+  );
+};
+
+// ─── Featured Post Hero ───────────────────────────────────────────────────────
+const FeaturedPost = ({ post }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".featured-animate", {
+        y: 30,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.1,
+        ease: "power3.out",
+        delay: 0.2,
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, []);
+
+  if (!post) return null;
+
+  return (
+    <div ref={ref} className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+      <Link
+        to={`/blogs/${post.slug}`}
+        className="group relative block rounded-3xl overflow-hidden bg-slate-900 shadow-2xl shadow-slate-900/20"
+      >
+        <div className="grid lg:grid-cols-2 min-h-[400px]">
+          {/* Text side */}
+          <div className="relative z-10 flex flex-col justify-center p-8 sm:p-12">
+            <div className="featured-animate">
+              <span className="inline-flex items-center gap-1.5 mb-5">
+                <span className="text-slate-300 text-sm font-medium">Featured</span>
+                <span className="bg-violet-500 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-md tracking-wide">
+                  Post
+                </span>
+              </span>
+            </div>
+
+            <h2 className="featured-animate text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-white leading-[1.15] mb-4 tracking-tight">
+              {post.title}
+            </h2>
+
+            <p className="featured-animate text-slate-400 text-base leading-relaxed mb-6 max-w-md">
+              {post.excerpt}
             </p>
 
-            {/* Search Bar */}
-            <div className="max-w-md mx-auto relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search articles..."
-                className="pl-10 w-full p-2 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
+            <div className="featured-animate">
+              <span className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-colors duration-200 group-hover:bg-violet-500">
+                Read More
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+              </span>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Categories Filter */}
-      <section className="py-8 border-b border-slate-200">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  category === "All"
-                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                    : "border border-slate-300 text-slate-700 hover:bg-slate-100"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Post */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Featured Article</h2>
-            <p className="text-slate-600">Our latest and most popular content</p>
-          </div>
-
-          {blogPosts
-            .filter((post) => post.featured)
-            .map((post, index) => (
-              <div key={index} className="border-0 shadow-xl overflow-hidden rounded-lg">
-                <div className="grid lg:grid-cols-2 gap-0">
-                  <div className="aspect-video lg:aspect-square bg-gradient-to-br from-blue-100 to-purple-100 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"></div>
-                    <div className="absolute bottom-4 left-4">
-                      <span className="inline-block bg-emerald-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                        {post.category}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-8 flex flex-col justify-center">
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">{post.title}</h3>
-                    <p className="text-slate-600 mb-6 text-lg">{post.excerpt}</p>
-                    <div className="flex items-center text-sm text-slate-500 mb-6">
-                      <User className="h-4 w-4 mr-2" />
-                      <span className="mr-4">{post.author}</span>
-                      <Calendar className="h-4 w-4 mr-2" />
-                      <span className="mr-4">{post.date}</span>
-                      <span>{post.readTime}</span>
-                    </div>
-                    <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-md flex items-center w-fit">
-                      Read Article
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-        </div>
-      </section>
-
-      {/* Blog Grid */}
-      <section className="py-12 bg-slate-50">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Latest Articles</h2>
-            <p className="text-slate-600">Discover our most recent insights and tips</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts
-              .filter((post) => !post.featured)
-              .map((post, index) => (
-                <div
-                  key={index}
-                  className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden rounded-lg"
-                >
-                  <div className="aspect-video bg-gradient-to-br from-slate-100 to-blue-100 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:from-blue-500/20 group-hover:to-purple-500/20 transition-all duration-300"></div>
-                    <div className="absolute top-4 left-4">
-                      <span className="inline-block bg-white/90 text-slate-700 px-2 py-1 rounded-full text-xs font-medium">
-                        {post.category}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-slate-600 mb-4 text-sm leading-relaxed">{post.excerpt}</p>
-                    <div className="flex items-center text-xs text-slate-500 mb-4">
-                      <User className="h-3 w-3 mr-1" />
-                      <span className="mr-3">{post.author}</span>
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span className="mr-3">{post.date}</span>
-                      <span>{post.readTime}</span>
-                    </div>
-                    <button
-                      className="border border-slate-300 text-slate-700 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 font-semibold px-3 py-1 rounded-md text-sm flex items-center transition-all"
-                    >
-                      Read More
-                      <ArrowRight className="ml-2 h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Signup */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Never Miss an Update</h2>
-          <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-            Subscribe to our newsletter and get the latest insights, tips, and trends delivered straight to your inbox.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 p-2 bg-white text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          {/* Image side */}
+          <div className="relative lg:absolute lg:right-0 lg:top-0 lg:bottom-0 lg:w-1/2">
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8 py-2 rounded-md">
-              Subscribe
-            </button>
+            {/* Overlay gradient for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/40 to-transparent hidden lg:block" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent lg:hidden" />
           </div>
         </div>
-      </section>
+      </Link>
+    </div>
+  );
+};
 
-      
+// ─── Blog Page ────────────────────────────────────────────────────────────────
+export default function BlogPage() {
+  const gridRef = useRef(null);
+
+  const featuredPost = blogPosts.find((p) => p.featured);
+  const regularPosts = blogPosts.filter((p) => !p.featured);
+
+  // GSAP staggered entrance animation for the card grid
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const cards = gridRef.current?.querySelectorAll(".gs-animate");
+      if (!cards || cards.length === 0) return;
+
+      gsap.fromTo(
+        cards,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: "power3.out",
+          delay: 0.6,
+        }
+      );
+    }, gridRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-slate-50 relative">
+      {/* Subtle grid background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px)",
+          backgroundSize: "52px 52px",
+        }}
+      />
+
+      {/* Top glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full opacity-20"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
+
+      <div className="relative z-10">
+        {/* Page header */}
+        <div className="pt-24 pb-12 text-center px-4">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3">
+            Our Blog
+          </h1>
+          <p className="text-lg text-slate-500 max-w-xl mx-auto">
+            Insights, tutorials, and the latest in tech — straight from our
+            team.
+          </p>
+        </div>
+
+        {/* Featured post */}
+        <FeaturedPost post={featuredPost} />
+
+        {/* Blog cards grid */}
+        <div
+          ref={gridRef}
+          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24"
+        >
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            {regularPosts.map((post, i) => (
+              <BlogCard key={post.id} post={post} index={i} />
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
