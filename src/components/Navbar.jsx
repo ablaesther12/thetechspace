@@ -40,8 +40,8 @@ const navItems = [
   { name: "Contact", path: "/contact" },
 ];
 
-// Pages that use the NEW light hero (no video overlay)
-const lightHeroPages = ["/"];
+// Pages that use light backgrounds → dark navbar text
+const lightHeroPages = ["/", "/about", "/services", "/team", "/blogs", "/contact", "/projects"];
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const Navbar = () => {
