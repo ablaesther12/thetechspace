@@ -1,619 +1,397 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { Target, Eye, Heart, Zap, Users, Award, Code, Cpu, Globe, Sparkles, ChevronRight, TrendingUp, BarChart3, Layers, MousePointer2, Palette, Rocket } from "lucide-react";
-import { FaLinkedinIn, FaTwitter, FaGithub } from "react-icons/fa";
-import Ab1 from "../assets/img/Ab1.jpg";
-import Ab2 from "../assets/img/Ab2.jpeg";
-import Ab3 from "../assets/img/Ab3.jpeg";
+import { motion, useMotionValue, useSpring, animate } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import {
+  ChevronRight, Users, Zap, Award, Heart
+} from "lucide-react";
+import JourneyTimeline from "../components/about/JourneyTimeline";
+import ValuesSection from "../components/about/ValuesSection";
+import TeamSection from "../components/about/TeamSection";
+import Hero3DScene from "../components/about/Hero3DScene";
 
-// Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 }
-  }
-};
-
-const slideInLeft = {
-  hidden: { opacity: 0, x: -60 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
-};
-
-const slideInRight = {
-  hidden: { opacity: 0, x: 60 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
-};
-
-// Light theme grid background
-function GridBackground() {
+/* ═══════════════════════════════════════════════════════════
+   Animated Background — CSS-driven for performance
+   No framer-motion infinite loops; uses CSS keyframes instead
+   ═══════════════════════════════════════════════════════════ */
+function AnimatedBackground() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+    <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden>
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-50/30 via-white to-slate-50/50" />
+      <div className="absolute inset-0 hex-grid opacity-80" />
+      <div className="absolute inset-0 cross-hatch" />
+
+      {/* Gradient blobs — CSS animated */}
+      <div
+        className="absolute w-[550px] h-[550px] top-[5%] left-[-8%] opacity-50 rounded-full blur-3xl will-change-transform"
+        style={{
+          background: 'radial-gradient(circle, rgba(139,92,246,0.09) 0%, transparent 70%)',
+          animation: 'blob-drift-1 22s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute w-[650px] h-[650px] top-[30%] right-[-10%] opacity-35 rounded-full blur-3xl will-change-transform"
+        style={{
+          background: 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 65%)',
+          animation: 'blob-drift-2 28s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute w-[400px] h-[400px] bottom-[15%] left-[15%] opacity-40 rounded-full blur-3xl will-change-transform"
+        style={{
+          background: 'radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 60%)',
+          animation: 'blob-drift-1 18s ease-in-out infinite reverse',
+        }}
+      />
+
+      {/* Particles — CSS animated, reduced to 4 */}
+      {[
+        { x: 15, y: 25, size: 4, delay: '0s', dur: '16s', color: 'rgba(139,92,246,0.12)' },
+        { x: 72, y: 18, size: 3, delay: '3s', dur: '20s', color: 'rgba(99,102,241,0.10)' },
+        { x: 40, y: 70, size: 5, delay: '1s', dur: '18s', color: 'rgba(168,85,247,0.08)' },
+        { x: 85, y: 55, size: 3, delay: '5s', dur: '15s', color: 'rgba(139,92,246,0.10)' },
+      ].map((p, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full will-change-transform"
+          style={{
+            width: p.size, height: p.size,
+            left: `${p.x}%`, top: `${p.y}%`,
+            background: p.color,
+            animation: `particle-float ${p.dur} ${p.delay} ease-in-out infinite`,
+          }}
+        />
+      ))}
+
+      {/* Wireframe shapes — CSS rotation */}
+      <div
+        className="absolute top-[10%] right-[7%] opacity-[0.025] will-change-transform"
+        style={{ animation: 'spin 55s linear infinite' }}
+      >
+        <svg width="180" height="180" viewBox="0 0 180 180" fill="none">
+          <rect x="40" y="40" width="100" height="100" stroke="#7c3aed" strokeWidth="0.8" transform="rotate(45 90 90)" />
+          <rect x="58" y="58" width="64" height="64" stroke="#7c3aed" strokeWidth="0.5" transform="rotate(45 90 90)" />
+        </svg>
+      </div>
+
+      <div
+        className="absolute bottom-[18%] left-[4%] opacity-[0.02] will-change-transform"
+        style={{ animation: 'spin 45s linear infinite' }}
+      >
+        <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
+          <polygon points="70,8 132,42 132,98 70,132 8,98 8,42" stroke="#6366f1" strokeWidth="0.7" />
+          <polygon points="70,28 112,50 112,90 70,112 28,90 28,50" stroke="#6366f1" strokeWidth="0.4" />
+        </svg>
+      </div>
+
+      {/* Vertical accent lines — static, no animation */}
+      <div className="absolute top-0 right-[22%] w-px h-full bg-gradient-to-b from-transparent via-violet-200/20 to-transparent" />
+      <div className="absolute top-0 left-[18%] w-px h-full bg-gradient-to-b from-transparent via-slate-200/20 to-transparent" />
+
+      <div className="absolute inset-0 fine-grain" />
     </div>
   );
 }
 
-// Animated counter component
-function AnimatedStat({ value, label, suffix = "" }) {
+/* ═══════════════════════════════════════════════════════════
+   Animated Counter — counts up when scrolled into view
+   ═══════════════════════════════════════════════════════════ */
+function AnimatedCounter({ value, suffix }) {
+  const numericValue = parseInt(value);
+  const count = useMotionValue(0);
+  const springCount = useSpring(count, { stiffness: 50, damping: 20 });
+  const [display, setDisplay] = useState("0");
+  const ref = useRef(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          animate(count, numericValue, { duration: 2, ease: "easeOut" });
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [count, numericValue, hasAnimated]);
+
+  useEffect(() => {
+    const unsubscribe = springCount.on("change", (v) => {
+      setDisplay(Math.round(v).toString());
+    });
+    return unsubscribe;
+  }, [springCount]);
+
   return (
-    <motion.div
-      variants={fadeInUp}
-      className="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-violet-200 transition-all duration-300"
-    >
-      <motion.span
-        className="text-5xl md:text-6xl font-bold text-gray-900"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        {value}<span className="text-violet-600">{suffix}</span>
-      </motion.span>
-      <p className="text-gray-500 mt-3 text-sm uppercase tracking-wider font-medium">{label}</p>
-    </motion.div>
+    <span ref={ref}>
+      {display}<span className="text-violet-600">{suffix}</span>
+    </span>
   );
 }
 
-// Value card component
-function ValueCard({ icon: Icon, title, description, index }) {
-  const colors = ["violet", "purple", "indigo"];
-  const color = colors[index % 3];
+/* ───── Enhanced Stat Card ───── */
+function StatCard({ value, suffix, label, index }) {
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.div
-      variants={fadeInUp}
-      whileHover={{ y: -8 }}
-      className="group relative bg-white rounded-3xl p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:border-violet-200 transition-all duration-500"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.12, duration: 0.5, ease: "easeOut" }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative"
     >
-      <div className={`w-16 h-16 bg-${color}-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-${color}-500 transition-colors duration-300`}>
-        <Icon className={`h-8 w-8 text-${color}-600 group-hover:text-white transition-colors duration-300`} />
-      </div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-4">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
-    </motion.div>
-  );
-}
-
-// Parallax Hero Section
-function ParallaxHero() {
-  const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-
-  // Parallax transforms - no spring for better performance
-  const laptopY = useTransform(scrollYProgress, [0, 1], [0, -150]);
-  const laptopRotate = useTransform(scrollYProgress, [0, 1], [8, -5]);
-  const leftCardY = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const rightCardY = useTransform(scrollYProgress, [0, 1], [0, -120]);
-  const bottomCardY = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const textY = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const bgY = useTransform(scrollYProgress, [0, 1], [0, 100]);
-
-  return (
-    <section ref={containerRef} className="relative min-h-screen pt-24 pb-32 overflow-hidden">
-      {/* Background with parallax */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-purple-50"
-        style={{ y: bgY }}
+        className="absolute -inset-px rounded-2xl"
+        style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.3), rgba(99,102,241,0.15), rgba(139,92,246,0.1))' }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
       />
-
-      {/* Gradient orbs with parallax */}
-      <motion.div
-        className="absolute top-20 left-10 w-[400px] h-[400px] bg-violet-200/30 rounded-full blur-3xl"
-        style={{ y: useTransform(scrollYProgress, [0, 1], [0, 50]) }}
-      />
-      <motion.div
-        className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-3xl"
-        style={{ y: useTransform(scrollYProgress, [0, 1], [0, -50]) }}
-      />
-
-      {/* Grid pattern */}
-      <GridBackground />
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4">
-        {/* Text content with parallax */}
+      <div className="relative glass-card rounded-2xl p-8 overflow-hidden hover:shadow-xl hover:shadow-violet-100/50 transition-all duration-500">
         <motion.div
-          className="text-center mb-12"
-          style={{ y: textY, opacity }}
-        >
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+          initial={{ x: '-100%', skewX: '-15deg' }}
+          animate={isHovered ? { x: '200%' } : { x: '-100%' }}
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
+        />
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-violet-100/50 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <span className="font-display text-5xl md:text-6xl font-800 text-slate-900 tracking-tight relative z-10 block">
+          <AnimatedCounter value={value} suffix={suffix} />
+        </span>
+        <p className="font-body text-slate-400 mt-3 text-xs uppercase tracking-[0.2em] font-medium relative z-10">{label}</p>
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-500 via-indigo-500 to-violet-500"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+          style={{ transformOrigin: 'left' }}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Hero Section — Original content + inspired visual layout
+   Centered text, floating 3D shapes from two diagonal clusters,
+   grid background, single CTA
+   ═══════════════════════════════════════════════════════════ */
+function HeroSection() {
+  return (
+    <section style={{ position: 'relative' }} className="min-h-screen">
+      {/* Background: white base + grid with violet dots */}
+      <div className="absolute inset-0 bg-white" />
+      <div className="absolute inset-0 hero-dot-grid" />
+
+      {/* Radial glow behind content */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full blur-3xl opacity-25 pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.1) 0%, rgba(99,102,241,0.05) 40%, transparent 70%)' }}
+      />
+
+      {/* Subtle violet accent lines radiating from center */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-300/20 to-transparent" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-violet-300/15 to-transparent" />
+      </div>
+
+      {/* Floating 3D Geometric Shapes */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <Hero3DScene />
+      </div>
+
+      {/* Content — centered */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+        <div className="text-center max-w-5xl mx-auto">
+
+          {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-7"
           >
-            <span className="inline-flex items-center gap-2 bg-violet-100 border border-violet-200 text-violet-700 px-5 py-2.5 rounded-full text-sm font-semibold">
-              <Sparkles className="w-4 h-4" />
-              About TTS
+            <span className="inline-flex items-center gap-2.5 glass-card border border-violet-200/50 text-violet-600 px-5 py-2.5 rounded-full text-sm font-body font-semibold shadow-sm">
+              Software Engineering Studio
             </span>
           </motion.div>
 
+          {/* Headline — original content */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-5xl md:text-7xl lg:text-[5.5rem] font-800 text-slate-900 mb-8 leading-[1.15] tracking-tight"
           >
-            We're More Than Just a{" "}
-            <span className="text-violet-600 italic">Creative Agency</span>
+            We Engineer
+            <br />
+            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-purple-500 to-indigo-600">
+              Digital Excellence
+            </span>
           </motion.h1>
 
+          {/* Subtext — original content */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-lg text-gray-600 max-w-xl mx-auto mb-8"
+            initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ delay: 0.9, duration: 0.7, ease: "easeOut" }}
+            className="font-body text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 font-light leading-relaxed"
           >
-            We're passionate about creating digital experiences that drive real results.
+            From architecture to deployment — we build scalable, performant digital
+            products that power businesses worldwide.
           </motion.p>
 
+          {/* Single CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            transition={{ delay: 1.1, duration: 0.5 }}
+            className="flex justify-center"
           >
-            <button className="bg-violet-600 hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 shadow-lg shadow-violet-500/25 flex items-center justify-center gap-2">
-              Get Started <ChevronRight className="w-4 h-4" />
-            </button>
-            <button className="border-2 border-gray-300 hover:border-violet-400 text-gray-700 hover:text-violet-600 font-semibold px-6 py-3 rounded-full transition-all duration-300">
-              Learn More
-            </button>
-          </motion.div>
-        </motion.div>
-
-        {/* 3D Laptop with parallax */}
-        <div className="relative max-w-5xl mx-auto" style={{ perspective: "2000px" }}>
-          {/* MacBook Laptop */}
-          <motion.div
-            initial={{ opacity: 0, y: 100, rotateX: 25 }}
-            animate={{ opacity: 1, y: 0, rotateX: 8 }}
-            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-            style={{
-              y: laptopY,
-              rotateX: laptopRotate,
-              transformStyle: "preserve-3d",
-              willChange: "transform"
-            }}
-            className="relative w-full max-w-4xl mx-auto"
-          >
-            {/* Screen */}
-            <div className="relative bg-gray-900 rounded-t-2xl p-2 pt-6 shadow-2xl border-4 border-gray-800">
-              {/* Camera notch */}
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-700 rounded-full flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
-              </div>
-
-              {/* Screen content */}
-              <div className="bg-gradient-to-br from-gray-50 via-white to-violet-50 rounded-lg overflow-hidden aspect-[16/10]">
-                {/* Browser header */}
-                <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-3">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                    <div className="w-3 h-3 rounded-full bg-green-400" />
-                  </div>
-                  <div className="flex-1 flex justify-center">
-                    <div className="bg-gray-100 rounded-lg px-4 py-1 text-xs text-gray-500 flex items-center gap-2 max-w-xs w-full justify-center">
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      thetechspace.com/dashboard
-                    </div>
-                  </div>
-                </div>
-
-                {/* Dashboard content */}
-                <div className="p-6 bg-gradient-to-br from-gray-50 to-white">
-                  {/* Dashboard header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">Analytics Overview</h3>
-                      <p className="text-gray-500 text-xs">Your project performance at a glance</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-medium flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> +24%
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Stats grid */}
-                  <div className="grid grid-cols-4 gap-3 mb-4">
-                    {[
-                      { label: "Visitors", value: "12.5K", icon: Users, color: "violet" },
-                      { label: "Conversion", value: "8.2%", icon: TrendingUp, color: "green" },
-                      { label: "Revenue", value: "$45K", icon: BarChart3, color: "blue" },
-                      { label: "Projects", value: "24", icon: Layers, color: "purple" }
-                    ].map((stat, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8 + i * 0.1 }}
-                        className="bg-white rounded-xl p-3 border border-gray-100 shadow-sm"
-                      >
-                        <div className={`w-6 h-6 bg-${stat.color}-100 rounded-lg flex items-center justify-center mb-2`}>
-                          <stat.icon className={`w-3 h-3 text-${stat.color}-600`} />
-                        </div>
-                        <p className="text-xl font-bold text-gray-900">{stat.value}</p>
-                        <p className="text-[10px] text-gray-500">{stat.label}</p>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* Chart */}
-                  <div className="bg-white rounded-xl p-4 border border-gray-100">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="font-semibold text-gray-900 text-sm">Performance</span>
-                      <div className="flex gap-2">
-                        <span className="text-[10px] px-2 py-0.5 bg-violet-100 text-violet-700 rounded">Weekly</span>
-                        <span className="text-[10px] px-2 py-0.5 text-gray-400">Monthly</span>
-                      </div>
-                    </div>
-                    <div className="flex items-end gap-1.5 h-20">
-                      {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
-                        <motion.div
-                          key={i}
-                          className="flex-1 bg-gradient-to-t from-violet-500 to-violet-400 rounded-t"
-                          initial={{ height: 0 }}
-                          animate={{ height: `${h}%` }}
-                          transition={{ delay: 1 + i * 0.03, duration: 0.4 }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Laptop base */}
-            <div className="relative">
-              <div className="h-3 bg-gradient-to-b from-gray-700 to-gray-800 rounded-b" />
-              <div className="bg-gradient-to-b from-gray-300 to-gray-400 h-4 rounded-b-xl mx-8 shadow-lg relative">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gray-400 rounded-b" />
-              </div>
-            </div>
-
-            {/* Shadow */}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-3/4 h-6 bg-black/10 blur-xl rounded-full" />
-          </motion.div>
-
-          {/* Floating Cards with Parallax */}
-          {/* Left card - Growth */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            style={{ y: leftCardY, willChange: "transform" }}
-            className="absolute left-0 md:left-4 top-1/4 z-20 hidden md:block"
-          >
-            <div className="bg-white/95 backdrop-blur rounded-2xl p-4 shadow-xl border border-gray-100 w-40 rotate-[-5deg]">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-gray-500">Growth</p>
-                  <p className="text-sm font-bold text-gray-900">+127%</p>
-                </div>
-              </div>
-              <div className="flex gap-0.5 h-8">
-                {[30, 45, 35, 60, 50, 75, 65, 80].map((h, i) => (
-                  <motion.div
-                    key={i}
-                    className="flex-1 bg-gradient-to-t from-green-500 to-green-400 rounded-sm"
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ delay: 0.8 + i * 0.05, duration: 0.3 }}
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right card - Projects */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            style={{ y: rightCardY, willChange: "transform" }}
-            className="absolute right-0 md:right-4 top-1/3 z-20 hidden md:block"
-          >
-            <div className="bg-white/95 backdrop-blur rounded-2xl p-4 shadow-xl border border-gray-100 w-44 rotate-[5deg]">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-gray-900">Active Projects</span>
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              </div>
-              <div className="space-y-2">
-                {[
-                  { name: "E-commerce", progress: 85, color: "violet" },
-                  { name: "Dashboard", progress: 60, color: "blue" },
-                  { name: "Mobile App", progress: 40, color: "green" }
-                ].map((project, i) => (
-                  <div key={i}>
-                    <div className="flex justify-between text-[10px] mb-1">
-                      <span className="text-gray-600">{project.name}</span>
-                      <span className="text-gray-400">{project.progress}%</span>
-                    </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <motion.div
-                        className={`h-full bg-${project.color}-500 rounded-full`}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${project.progress}%` }}
-                        transition={{ delay: 0.9 + i * 0.1, duration: 0.5 }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Bottom pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            style={{ y: bottomCardY, willChange: "transform" }}
-            className="absolute left-1/2 -translate-x-1/2 -bottom-4 z-20"
-          >
-            <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-full px-5 py-2.5 shadow-xl flex items-center gap-3 text-white">
-              <div className="flex items-center gap-1.5">
-                <Palette className="w-3.5 h-3.5" />
-                <span className="text-xs font-medium">Design</span>
-              </div>
-              <div className="w-px h-3 bg-white/30" />
-              <div className="flex items-center gap-1.5">
-                <Code className="w-3.5 h-3.5" />
-                <span className="text-xs font-medium">Develop</span>
-              </div>
-              <div className="w-px h-3 bg-white/30" />
-              <div className="flex items-center gap-1.5">
-                <Rocket className="w-3.5 h-3.5" />
-                <span className="text-xs font-medium">Deploy</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Cursor */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1, duration: 0.4 }}
-            className="absolute right-1/4 top-1/2 z-30 hidden lg:flex items-center gap-1"
-          >
-            <MousePointer2 className="w-4 h-4 text-violet-600 fill-violet-600" />
-            <span className="bg-violet-600 text-white text-[10px] px-2 py-0.5 rounded-full font-medium shadow-lg">
-              You
-            </span>
+            <motion.button
+              className="group relative bg-gradient-to-r from-violet-600 to-purple-600 text-white font-body font-semibold px-8 py-4 rounded-full transition-all duration-300 shadow-lg shadow-violet-500/25 flex items-center gap-2.5 overflow-hidden"
+              whileHover={{ scale: 1.04, boxShadow: '0 20px 40px -12px rgba(124,58,237,0.4)' }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                Book a call
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+            </motion.button>
           </motion.div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        style={{ opacity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="flex flex-col items-center gap-1"
-        >
-          <span className="text-xs text-gray-400">Scroll</span>
-          <div className="w-5 h-8 border-2 border-gray-300 rounded-full flex justify-center pt-1.5">
-            <motion.div className="w-1 h-2 bg-violet-500 rounded-full" />
-          </div>
-        </motion.div>
-      </motion.div>
     </section>
   );
 }
 
-export default function AboutPage() {
-  const values = [
-    { icon: Target, title: "Our Mission", description: "To empower businesses with innovative digital solutions that drive growth, enhance user experiences, and create lasting impact in the digital landscape." },
-    { icon: Eye, title: "Our Vision", description: "To be the leading creative agency that bridges the gap between cutting-edge technology and exceptional design, setting new standards in digital innovation." },
-    { icon: Heart, title: "Our Values", description: "Creativity, integrity, collaboration, and excellence. We believe in building long-term partnerships based on trust, transparency, and mutual success." }
-  ];
-
+/* ───── Story Section ───── */
+function StorySection() {
   const features = [
-    { icon: Zap, text: "Fast Delivery" },
-    { icon: Users, text: "Expert Team" },
-    { icon: Award, text: "Quality Assured" },
-    { icon: Heart, text: "Client-Focused" }
+    { icon: Zap, text: "Fast Delivery", desc: "Shipped in weeks, not months" },
+    { icon: Users, text: "Expert Team", desc: "50+ skilled professionals" },
+    { icon: Award, text: "Quality Assured", desc: "Pixel-perfect execution" },
+    { icon: Heart, text: "Client-Focused", desc: "Your success is our mission" }
   ];
 
-  const techStack = [
-    { icon: Code, label: "Clean Code" },
-    { icon: Cpu, label: "Modern Tech" },
-    { icon: Globe, label: "Global Reach" },
-    { icon: Sparkles, label: "Innovation" }
-  ];
-
-  const teamMembers = [
-    {
-      name: "Daniel Oppong-Boah",
-      role: "CEO & FullStack Developer",
-      image: Ab3,
-      skills: ["Software Developer", "Web Developer"],
-      bio: "Daniel crafts intuitive user experiences that convert. His designs are both beautiful and highly functional.",
-      funFact: "Sketches app ideas on napkins during lunch breaks",
-      socials: { linkedin: "#", twitter: "#", github: "#" }
-    },
-    {
-      name: "Esther Abla Dzampah",
-      role: "Co-founder & Administrator",
-      image: Ab2,
-      skills: ["Frontend Developer", "Graphic Designer"],
-      bio: "Esther brings complex ideas to life with clean, scalable code. She's our go-to for technical architecture and optimization.",
-      funFact: "Solves coding problems while rock climbing",
-      socials: { linkedin: "#", twitter: "#", github: "#" }
-    },
-    {
-      name: "Jeffery Boafo",
-      role: "Co-Founder & Creative Director",
-      image: Ab1,
-      skills: ["Product Designer", "Brand Strategist", "Visual Design"],
-      bio: "With 8+ years in creative direction, Jeffery leads our design vision and ensures every project tells a compelling story.",
-      funFact: "Coffee enthusiast who can design better after the 3rd cup",
-      socials: { linkedin: "#", twitter: "#", github: "#" }
-    }
-  ];
+  const [hoveredFeature, setHoveredFeature] = useState(null);
+  const [hoveredListItem, setHoveredListItem] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 overflow-hidden">
-      {/* Parallax Hero Section */}
-      <ParallaxHero />
+    <section className="py-20 relative overflow-x-clip">
+      <div className="absolute inset-0 bg-slate-50/40" />
+      <div className="absolute inset-0 diagonal-lines-light" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-violet-100/40 to-transparent rounded-full blur-3xl" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
-      {/* Stats Section */}
-      <section className="py-24 relative bg-white">
-        <GridBackground />
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6"
-          >
-            <AnimatedStat value="50" suffix="+" label="Projects Completed" />
-            <AnimatedStat value="30" suffix="+" label="Happy Clients" />
-            <AnimatedStat value="5" suffix="+" label="Years Experience" />
-            <AnimatedStat value="24" suffix="/7" label="Support Available" />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Mission, Vision, Values */}
-      <section className="py-24 relative bg-gray-50">
-        <GridBackground />
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-            className="text-center mb-16"
-          >
-            <span className="text-violet-600 font-semibold text-sm uppercase tracking-wider">What Drives Us</span>
-            <h2 className="text-4xl md:text-5xl font-bold mt-4 text-gray-900">
-              Our Core <span className="text-violet-600 italic">Principles</span>
-            </h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {values.map((item, index) => (
-              <ValueCard key={index} {...item} index={index} />
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Tech Stack Marquee */}
-      <section className="py-12 bg-white border-y border-gray-100 overflow-hidden">
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex gap-16 animate-marquee"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12 max-w-4xl mx-auto"
         >
-          {[...techStack, ...techStack, ...techStack, ...techStack].map((tech, index) => (
-            <div key={index} className="flex items-center gap-3 text-gray-400 whitespace-nowrap">
-              <tech.icon className="w-6 h-6" />
-              <span className="text-lg font-medium">{tech.label}</span>
-            </div>
-          ))}
+          <span className="font-body text-violet-600 font-semibold text-xs uppercase tracking-[0.2em] mb-4 block">Our Story</span>
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-800 text-slate-900 leading-[1.15] tracking-tight mb-5">
+            Why Choose{" "}
+            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">
+              TTS?
+            </span>
+          </h2>
+          <p className="font-body text-slate-400 text-base font-light leading-relaxed max-w-xl mx-auto">
+            We're your strategic partners who understand that every pixel, every line of code, and every user interaction matters.
+          </p>
         </motion.div>
-      </section>
 
-      {/* Our Story */}
-      <section className="py-24 relative bg-gray-50">
-        <GridBackground />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={slideInLeft}
-            >
-              <span className="text-violet-600 font-semibold text-sm uppercase tracking-wider">Our Story</span>
-              <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-8 text-gray-900">
-                Why Choose <span className="text-violet-600 italic">TTS?</span>
-              </h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Founded in 2025, TTS emerged from a simple belief: that great design and powerful technology should work
-                hand in hand. Our founders, coming from backgrounds in both creative design and software development,
-                saw an opportunity to create something different.
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-start max-w-7xl mx-auto">
+          {/* Left: Text */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5"
+          >
+            <div className="space-y-5 mb-10">
+              <p className="font-body text-slate-500 text-lg leading-relaxed font-light">
+                Founded in 2018, TTS emerged from a simple belief: that great design and powerful technology should work hand in hand.
               </p>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                We're not just another agency. We're your strategic partners who understand that every pixel, every line
-                of code, and every user interaction matters.
+              <p className="font-body text-slate-400 text-base leading-relaxed font-light">
+                We're not just another agency. We're your strategic partners who understand that every pixel, every line of code, and every user interaction matters.
               </p>
+            </div>
 
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="grid grid-cols-2 gap-4"
-              >
-                {features.map((feature, index) => (
+            <div className="grid grid-cols-2 gap-3">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.08 }}
+                  onMouseEnter={() => setHoveredFeature(index)}
+                  onMouseLeave={() => setHoveredFeature(null)}
+                  className="group relative overflow-hidden"
+                >
                   <motion.div
-                    key={index}
-                    variants={fadeInUp}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-violet-200 transition-all duration-300"
-                  >
-                    <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
-                      <feature.icon className="h-5 w-5 text-violet-600" />
+                    className="absolute -inset-px rounded-xl bg-gradient-to-br from-violet-300/40 to-indigo-300/20"
+                    animate={{ opacity: hoveredFeature === index ? 1 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  <div className="relative flex items-start gap-3 p-4 rounded-xl glass-card hover:shadow-lg hover:shadow-violet-50/60 transition-all duration-300">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-100/30 to-transparent rounded-xl"
+                      initial={{ x: '-100%' }}
+                      animate={hoveredFeature === index ? { x: '200%' } : { x: '-100%' }}
+                      transition={{ duration: 0.6 }}
+                    />
+                    <div className="w-9 h-9 bg-violet-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-violet-100 group-hover:shadow-md group-hover:shadow-violet-200/50 transition-all duration-300">
+                      <feature.icon className="h-4 w-4 text-violet-600" />
                     </div>
-                    <span className="font-semibold text-gray-800">{feature.text}</span>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
+                    <div className="relative z-10">
+                      <span className="font-display font-bold text-slate-800 text-sm block">{feature.text}</span>
+                      <span className="font-body text-slate-400 text-xs">{feature.desc}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={slideInRight}
-              className="relative"
-            >
-              <div className="absolute -inset-4 bg-gradient-to-r from-violet-200/50 to-purple-200/50 rounded-3xl blur-2xl" />
-              <div className="relative bg-white rounded-3xl p-8 border border-gray-100 shadow-xl">
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
+          {/* Right: Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="lg:col-span-7 relative"
+          >
+            <div className="absolute -inset-4 bg-gradient-to-br from-violet-200/30 to-indigo-200/20 rounded-3xl blur-2xl" />
+
+            <div className="relative glass-card border border-slate-200/80 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/30 hover:shadow-2xl hover:shadow-violet-100/40 transition-all duration-500">
+              <div className="flex items-center gap-3 px-6 py-4 bg-slate-50/80 border-b border-slate-100">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-400 hover:bg-red-500 transition-colors cursor-pointer" />
+                  <div className="w-3 h-3 rounded-full bg-amber-400 hover:bg-amber-500 transition-colors cursor-pointer" />
+                  <div className="w-3 h-3 rounded-full bg-green-400 hover:bg-green-500 transition-colors cursor-pointer" />
                 </div>
-                <h3 className="text-2xl font-bold mb-6 text-gray-900">What Sets Us Apart</h3>
-                <ul className="space-y-4">
+                <span className="text-slate-400 text-xs font-mono ml-2">what-sets-us-apart.ts</span>
+              </div>
+
+              <div className="p-8">
+                <h3 className="font-display text-2xl font-bold mb-8 text-slate-900">What Sets Us Apart</h3>
+
+                <ul className="space-y-5 mb-8">
                   {[
-                    "Technical + Creative Expertise",
-                    "Agile Development Process",
-                    "24/7 Support & Maintenance",
-                    "Results-Driven Approach"
+                    { text: "Technical + Creative Expertise", tag: "CORE" },
+                    { text: "Agile Development Process", tag: "PROCESS" },
+                    { text: "24/7 Support & Maintenance", tag: "SERVICE" },
+                    { text: "Results-Driven Approach", tag: "STRATEGY" }
                   ].map((item, index) => (
                     <motion.li
                       key={index}
@@ -621,116 +399,112 @@ export default function AboutPage() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      className="flex items-center gap-3"
+                      className="flex items-center gap-4 group cursor-pointer"
+                      onMouseEnter={() => setHoveredListItem(index)}
+                      onMouseLeave={() => setHoveredListItem(null)}
                     >
-                      <div className="w-2 h-2 bg-violet-500 rounded-full" />
-                      <span className="text-gray-700 font-medium">{item}</span>
+                      <motion.div
+                        className="w-2.5 h-2.5 bg-violet-500 rounded-full flex-shrink-0"
+                        animate={{
+                          scale: hoveredListItem === index ? 1.4 : 1,
+                          boxShadow: hoveredListItem === index ? '0 0 12px rgba(139,92,246,0.5)' : '0 0 0px rgba(139,92,246,0)',
+                        }}
+                        transition={{ duration: 0.25 }}
+                      />
+                      <motion.span
+                        className="font-body text-slate-600 font-medium flex-1"
+                        animate={{
+                          x: hoveredListItem === index ? 4 : 0,
+                          color: hoveredListItem === index ? '#7c3aed' : '#475569',
+                        }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {item.text}
+                      </motion.span>
+                      <motion.span
+                        className="text-[10px] font-body font-semibold text-violet-500 bg-violet-50 px-2.5 py-0.5 rounded-full tracking-wider"
+                        animate={{
+                          backgroundColor: hoveredListItem === index ? 'rgba(124,58,237,0.15)' : 'rgba(245,243,255,1)',
+                          scale: hoveredListItem === index ? 1.05 : 1,
+                        }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {item.tag}
+                      </motion.span>
                     </motion.li>
                   ))}
                 </ul>
 
-                <div className="mt-8 p-4 bg-slate-900 rounded-xl font-mono text-sm">
-                  <span className="text-violet-400">const</span>{" "}
-                  <span className="text-cyan-300">success</span>{" "}
-                  <span className="text-white">=</span>{" "}
-                  <span className="text-amber-300">"TTS"</span>
-                  <span className="text-slate-500">;</span>
+                <div className="p-5 bg-slate-900 rounded-xl font-mono text-sm group hover:shadow-lg hover:shadow-slate-900/20 transition-shadow duration-300">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-slate-600 text-xs">1</span>
+                    <span className="text-violet-400">const</span>{" "}
+                    <span className="text-cyan-300">success</span>{" "}
+                    <span className="text-slate-400">=</span>{" "}
+                    <span className="text-amber-300">"TheTechSpace"</span>
+                    <span className="text-slate-600">;</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-600 text-xs">2</span>
+                    <span className="text-violet-400">export default</span>{" "}
+                    <span className="text-cyan-300">success</span>
+                    <span className="text-slate-600">;</span>
+                    <span className="inline-block w-2 h-4 bg-violet-400 animate-pulse ml-0.5" />
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
-      </section>
+      </div>
 
-      {/* Meet the Team Section */}
-      <section className="py-24 relative bg-white overflow-hidden">
-        <GridBackground />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-violet-100/50 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+    </section>
+  );
+}
 
-        <div className="container mx-auto px-4 relative z-10">
+/* ───── Main About Page ───── */
+export default function AboutPage() {
+  return (
+    <div className="min-h-screen bg-white text-slate-900 overflow-x-hidden font-body relative">
+      <AnimatedBackground />
+
+      <div className="relative z-10">
+        <HeroSection />
+
+        {/* Stats */}
+        <section className="py-16 relative">
+          <div className="absolute inset-0 bg-white/60" />
+
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeInUp}
-            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10 relative z-10"
           >
-            <span className="text-violet-600 font-semibold text-sm uppercase tracking-wider">The Founders</span>
-            <h2 className="text-4xl md:text-5xl font-bold mt-4 text-gray-900">
-              Meet the <span className="text-violet-600 italic">Team</span>
+            <span className="font-body text-slate-400 text-xs uppercase tracking-[0.2em] block mb-3">By the Numbers</span>
+            <h2 className="font-display text-3xl md:text-4xl font-800 text-slate-900 tracking-tight">
+              Impact at <span className="italic text-violet-600">Scale</span>
             </h2>
-            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-              The passionate minds behind TTS, dedicated to bringing your digital vision to life.
-            </p>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={index}
-                variants={fadeInUp}
-                whileHover={{ y: -8 }}
-                className="group"
-              >
-                <div className="relative overflow-hidden rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
-                  <div className="relative h-80 overflow-hidden">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover object-[center_20%] transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent" />
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+              <StatCard value="50" suffix="+" label="Projects Completed" index={0} />
+              <StatCard value="30" suffix="+" label="Happy Clients" index={1} />
+              <StatCard value="5" suffix="+" label="Years Experience" index={2} />
+              <StatCard value="24" suffix="/7" label="Support Available" index={3} />
+            </div>
+          </div>
 
-                    <motion.div className="absolute bottom-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {member.socials.linkedin && (
-                        <a href={member.socials.linkedin} className="w-9 h-9 bg-violet-600 rounded-full flex items-center justify-center text-white hover:bg-violet-700 transition-all duration-300 shadow-lg">
-                          <FaLinkedinIn className="w-4 h-4" />
-                        </a>
-                      )}
-                      {member.socials.twitter && (
-                        <a href={member.socials.twitter} className="w-9 h-9 bg-violet-600 rounded-full flex items-center justify-center text-white hover:bg-violet-700 transition-all duration-300 shadow-lg">
-                          <FaTwitter className="w-4 h-4" />
-                        </a>
-                      )}
-                      {member.socials.github && (
-                        <a href={member.socials.github} className="w-9 h-9 bg-violet-600 rounded-full flex items-center justify-center text-white hover:bg-violet-700 transition-all duration-300 shadow-lg">
-                          <FaGithub className="w-4 h-4" />
-                        </a>
-                      )}
-                    </motion.div>
-                  </div>
+          <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+        </section>
 
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
-                    <p className="text-violet-600 font-semibold text-sm mt-1">{member.role}</p>
-
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {member.skills.map((skill, skillIndex) => (
-                        <span key={skillIndex} className="px-3 py-1 text-xs bg-violet-50 border border-violet-100 rounded-full text-violet-700 font-medium">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-
-                    <p className="text-gray-600 text-sm mt-4 leading-relaxed">{member.bio}</p>
-
-                    <div className="mt-4 p-3 bg-violet-50 rounded-xl border border-violet-100">
-                      <p className="text-xs text-violet-600 uppercase tracking-wider mb-1 font-semibold">Fun Fact</p>
-                      <p className="text-sm text-gray-700">{member.funFact}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+        <JourneyTimeline />
+        <ValuesSection />
+        <StorySection />
+        <TeamSection />
+      </div>
     </div>
   );
 }
