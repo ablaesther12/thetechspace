@@ -1,45 +1,165 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Send } from "lucide-react";
+import confetti from "canvas-confetti";
 
-const NewsletterSection = () => {
-    const [email, setEmail] = useState('');
+function NewsletterSignup({ onSubmit, className = "" }) {
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // TODO: wire up to email service
-        setEmail('');
+        setError("");
+
+        if (!email) {
+            setError("Email is required");
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError("Please enter a valid email address");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            await onSubmit(email);
+            setIsSubmitted(true);
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+            });
+        } catch (err) {
+            setError("An error occurred. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-            <div className="container mx-auto px-4 text-center">
-                <div className="max-w-2xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4">Stay Inspired</h2>
-                    <p className="text-xl mb-8 text-blue-100">
-                        Get tips, trends &amp; updates in your inbox. Join our community of digital innovators.
-                    </p>
-                    <form
+        <div
+            className={`bg-secondary/50 border border-primary/10 rounded-lg p-6 ${className}`}
+        >
+            <AnimatePresence mode="wait">
+                {!isSubmitted ? (
+                    <motion.form
+                        key="form"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
                         onSubmit={handleSubmit}
-                        className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+                        className="flex flex-col gap-4"
                     >
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            required
-                            className="flex-1 p-2 bg-white text-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        />
-                        <button
-                            type="submit"
-                            className="bg-green-700 hover:bg-slate-800 text-white font-semibold px-8 py-2 rounded-md transition-colors"
-                        >
-                            Subscribe
-                        </button>
-                    </form>
-                </div>
+                        <div className="flex items-start justify-center gap-1 flex-col overflow-y-hidden">
+                            <motion.h2
+                                className="text-2xl font-bold text-foreground"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                Subscribe to our newsletter
+                            </motion.h2>
+                            <motion.p
+                                className="text-muted-foreground text-sm"
+                                initial={{ opacity: 0, y: 10, filter: "blur(3px)" }}
+                                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                                transition={{ delay: 0.4 }}
+                            >
+                                Stay up to date with our latest news and updates.
+                            </motion.p>
+                        </div>
+                        <div className="space-y-2">
+                            <motion.label
+                                initial={{ opacity: 0, filter: "blur(3px)" }}
+                                animate={{ opacity: 1, filter: "blur(0px)" }}
+                                transition={{ delay: 0.6 }}
+                                className="font-medium text-sm"
+                                htmlFor="email"
+                            >
+                                Email address
+                            </motion.label>
+                            <motion.div
+                                className="flex gap-2"
+                                initial={{ opacity: 0, filter: "blur(3px)" }}
+                                animate={{ opacity: 1, filter: "blur(0px)" }}
+                                transition={{ delay: 0.7 }}
+                            >
+                                <input
+                                    type="email"
+                                    id="email"
+                                    placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-md focus-visible:ring-0 focus-within:ring-0 focus:outline-white/10"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="relative overflow-hidden text-sm flex items-center justify-center gap-2 px-4 py-2 bg-white border-black font-medium"
+                                >
+                                    <motion.div
+                                        key="default"
+                                        initial={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="flex items-center px-4"
+                                    >
+                                        <Send className="h-4 w-4" />
+                                        <span className="ml-2">Subscribe</span>
+                                    </motion.div>
+                                </button>
+                            </motion.div>
+                        </div>
+                        <AnimatePresence>
+                            {error && (
+                                <motion.p
+                                    className="text-red-500 text-sm"
+                                    initial={{ opacity: 0, y: 5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -5 }}
+                                >
+                                    {error}
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </motion.form>
+                ) : (
+                    <motion.div
+                        key="success"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="text-center"
+                    >
+                        <h2 className="text-2xl font-bold text-foreground mb-2">
+                            Thank you for subscribing!
+                        </h2>
+                        <p className="text-muted-foreground">
+                            We&apos;ve sent a confirmation email to your inbox.
+                        </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
+// Wrapper that provides the onSubmit handler and section layout
+export default function NewsletterSection() {
+    const handleSubmit = async (email) => {
+        // TODO: wire up to your email service (e.g. Mailchimp, ConvertKit, Supabase)
+        console.log("Newsletter signup:", email);
+    };
+
+    return (
+        <section className="py-20 bg-white">
+            <div className="container mx-auto px-4 max-w-xl">
+                <NewsletterSignup onSubmit={handleSubmit} />
             </div>
         </section>
     );
-};
-
-export default NewsletterSection;
+}
