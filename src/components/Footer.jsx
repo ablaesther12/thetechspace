@@ -1,27 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { animateScroll as scroll } from 'react-scroll';
 import {
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaPhone,
   FaFacebookF,
   FaTwitter,
   FaInstagram,
   FaPinterest,
   FaArrowUp,
 } from 'react-icons/fa';
-import logo1 from '../assets/img/logo1.png'; // Adjust the path to your logo image file
+import logo1 from '../assets/img/logo1.png';
 
-const FooterLink = ({ to, children }) => (
-  <Link
-    to={to}
-    className="relative inline-block text-gray-300 hover:text-brand-gold transition-colors duration-300 group"
-  >
-    {children}
-    <span className="absolute bottom-[-2px] left-0 w-full h-px bg-brand-gold transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
-  </Link>
-);
+const sections = [
+  {
+    title: "Quick Links",
+    links: [
+      { name: "About Us", href: "/about" },
+      { name: "Services", href: "/services" },
+      { name: "Contact", href: "/contact" },
+      { name: "Projects", href: "/projects" },
+    ],
+  },
+  {
+    title: "Services",
+    links: [
+      { name: "Web Development", href: "/services/web-development" },
+      { name: "Graphic Design", href: "/services/graphic-design" },
+      { name: "UI/UX Design", href: "/services/ui-ux" },
+      { name: "Branding", href: "/services/branding" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { name: "Help Center", href: "/help" },
+      { name: "Blog", href: "/blog" },
+      { name: "Careers", href: "/careers" },
+      { name: "Newsletter", href: "#newsletter" },
+    ],
+  },
+];
+
+const socialLinks = [
+  { icon: <FaInstagram className="size-5" />, href: "https://instagram.com", label: "Instagram" },
+  { icon: <FaFacebookF className="size-5" />, href: "https://facebook.com", label: "Facebook" },
+  { icon: <FaTwitter className="size-5" />, href: "https://twitter.com", label: "Twitter" },
+  { icon: <FaPinterest className="size-5" />, href: "https://pinterest.com", label: "Pinterest" },
+];
+
+const legalLinks = [
+  { name: "Terms of Use", href: "/terms" },
+  { name: "Privacy Policy", href: "/privacy" },
+];
 
 const Footer = () => {
   const [showScroll, setShowScroll] = useState(false);
@@ -44,102 +73,71 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="bg-slate-900 text-gray-300 pt-16 pb-8">
-        <div className="w-full mx-auto  sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Column 1: About */}
-            <div className="space-y-4">
-              <Link to="/">
-                <img src={logo1} alt="TTS Logo" className="h-16 w-auto" />
-              </Link>
-              <p className="text-sm">
-                The Tech Space — building Africa’s leading innovation hub for tech, design, and digital solutions.
-              </p>
-              <div className="space-y-2 text-sm">
-                <p className="flex items-start">
-                  <FaMapMarkerAlt className="w-4 h-4 mr-3 mt-1 flex-shrink-0 text-brand-gold" />  
-                  123 Tech Street, Digital City
-                </p>
-                <p className="flex items-center">
-                  <FaEnvelope className="w-4 h-4 mr-3 text-brand-gold" /> hello@thetechspace.com
-                </p>
-                <p className="flex items-center">
-                  <FaPhone className="w-4 h-4 mr-3 text-brand-gold" /> +1 (555) 123-4567
-                </p>
-              </div>
-            </div>
-
-            {/* Column 2: Quick Links */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
-              <ul className="space-y-3 text-sm">
-                <li><FooterLink to="/about">About Us</FooterLink></li>
-                <li><FooterLink to="/services">Services</FooterLink></li>
-                <li><FooterLink to="/contact">Contact</FooterLink></li>
-                <li><FooterLink to="/projects">Projects</FooterLink></li>
-              </ul>
-            </div>
-
-            {/* Column 3: Services */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Services</h3>
-              <ul className="space-y-3 text-sm">
-                <li><FooterLink to="/services/web-development">Web Development</FooterLink></li>
-                <li><FooterLink to="/services/graphic-design">Graphic Design</FooterLink></li>
-                <li><FooterLink to="/services/ui-ux">UI/UX Design</FooterLink></li>
-                <li><FooterLink to="/services/branding">Branding</FooterLink></li>
-              </ul>
-            </div>
-
-            {/* Column 4: Newsletter */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Newsletter</h3>
-              <p className="text-sm mb-4">Subscribe to our newsletter for the latest updates and insights.</p>
-              <form>
-                <div className="flex">
-                  <input
-                    type="email"
-                    placeholder="Enter Email Address"
-                    className="w-full px-4 py-2 text-gray-800 bg-gray-100 rounded-l-md focus:outline-none focus:ring-2 focus:ring-brand-gold"
+      <section className="py-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex w-full flex-col justify-between gap-10 lg:flex-row lg:items-start lg:text-left">
+            {/* Left column: Logo, description & socials */}
+            <div className="flex w-full flex-col justify-between gap-6 lg:items-start">
+              <div className="flex items-center gap-2 lg:justify-start">
+                <Link to="/">
+                  <img
+                    src={logo1}
+                    alt="TTS Logo"
+                    title="The Tech Space"
+                    className="h-12"
                   />
-                  <button
-                    type="submit"
-                    className="bg-green-700 text-white px-4 py-2 rounded-r-md hover:opacity-90 transition-colors"
-                  >
-                    Subscribe
-                  </button>
+                </Link>
+                <h2 className="text-xl font-semibold text-gray-900">The Tech Space</h2>
+              </div>
+              <p className="max-w-[70%] text-sm text-gray-500">
+                The Tech Space — building Africa's leading innovation hub for tech, design, and digital solutions.
+              </p>
+              <ul className="flex items-center space-x-6 text-gray-400">
+                {socialLinks.map((social, idx) => (
+                  <li key={idx} className="font-medium hover:text-gray-900 transition-colors">
+                    <a href={social.href} aria-label={social.label} target="_blank" rel="noopener noreferrer">
+                      {social.icon}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Right columns: Link sections */}
+            <div className="grid w-full gap-6 md:grid-cols-3 lg:gap-20">
+              {sections.map((section, sectionIdx) => (
+                <div key={sectionIdx}>
+                  <h3 className="mb-4 font-bold text-gray-900">{section.title}</h3>
+                  <ul className="space-y-3 text-sm text-gray-500">
+                    {section.links.map((link, linkIdx) => (
+                      <li
+                        key={linkIdx}
+                        className="font-medium hover:text-gray-900 transition-colors"
+                      >
+                        <Link to={link.href}>{link.name}</Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </form>
-              <div className="flex items-center mt-4">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  className="h-4 w-4 text-brand-gold focus:ring-brand-gold border-gray-300 rounded"
-                />
-                <label htmlFor="terms" className="ml-2 block text-sm text-gray-400">
-                  I agree to all terms and policies
-                </label>
-              </div>
-              <div className="flex space-x-4 mt-6">
-                <a href="https://facebook.com" className="text-gray-400 hover:text-white"><FaFacebookF /></a>
-                <a href="https://twitter.com" className="text-gray-400 hover:text-white"><FaTwitter /></a>
-                <a href="https://instagram.com" className="text-gray-400 hover:text-white"><FaInstagram /></a>
-                <a href="https://pinterest.com" className="text-gray-400 hover:text-white"><FaPinterest /></a>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Footer bottom */}
-          <div className="mt-12 border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-            <p>&copy; {new Date().getFullYear()} TTS - The Tech Space. All Rights Reserved.</p>
-          
-            <div className="flex space-x-4">
-              <FooterLink to="/terms">Terms of Use</FooterLink>
-              <FooterLink to="/privacy">Privacy Policy</FooterLink>
-            </div>
+          {/* Bottom bar */}
+          <div className="mt-8 flex flex-col justify-between gap-4 border-t border-gray-200 py-8 text-xs font-medium text-gray-500 md:flex-row md:items-center md:text-left">
+            <p className="order-2 lg:order-1">
+              &copy; {new Date().getFullYear()} TTS - The Tech Space. All Rights Reserved.
+            </p>
+            <ul className="order-1 flex flex-col gap-2 md:order-2 md:flex-row">
+              {legalLinks.map((link, idx) => (
+                <li key={idx} className="hover:text-gray-900 transition-colors">
+                  <Link to={link.href}>{link.name}</Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </footer>
+      </section>
 
       {/* Scroll to Top Button */}
       {showScroll && (
