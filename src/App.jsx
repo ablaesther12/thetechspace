@@ -12,13 +12,27 @@ import ProjectsPage from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import BlogDetail from './pages/BlogDetail'
 
+// Admin imports
+import { AuthProvider } from './admin/contexts/AuthContext'
+import ProtectedRoute from './admin/components/ProtectedRoute'
+import AdminLayout from './admin/layouts/AdminLayout'
+import AdminLogin from './admin/pages/Login'
+import AdminDashboard from './admin/pages/Dashboard'
+import AdminPosts from './admin/pages/Posts'
+import AdminTeam from './admin/pages/TeamManagement'
+import AdminServices from './admin/pages/ServicesManagement'
+import AdminContacts from './admin/pages/Contacts'
+import AdminSettings from './admin/pages/Settings'
+import AdminHelp from './admin/pages/HelpCenter'
+import AdminMilestones from './admin/pages/MilestonesManagement'
+
 function App() {
 
-
   return (
-    <div>
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* ── Public site ── */}
           <Route path='/' element={<RootLayout />}>
             <Route index={true} element={<Home />} />
             <Route path='/about' element={<About />} />
@@ -30,10 +44,22 @@ function App() {
             <Route path='/projects' element={<ProjectsPage />} />
             <Route path='/projects/:id' element={<ProjectDetail />} />
           </Route>
-        </Routes>
 
+          {/* ── Admin dashboard ── */}
+          <Route path='/admin/login' element={<AdminLogin />} />
+          <Route path='/admin' element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path='posts' element={<AdminPosts />} />
+            <Route path='team' element={<AdminTeam />} />
+            <Route path='services' element={<AdminServices />} />
+            <Route path='milestones' element={<AdminMilestones />} />
+            <Route path='contacts' element={<AdminContacts />} />
+            <Route path='settings' element={<AdminSettings />} />
+            <Route path='help' element={<AdminHelp />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
-    </div>
+    </AuthProvider>
   )
 }
 

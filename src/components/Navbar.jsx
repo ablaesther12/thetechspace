@@ -133,8 +133,15 @@ const Navbar = () => {
             ))}
           </nav>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:block">
+          {/* Desktop CTA + Admin link */}
+          <div className="hidden md:flex items-center gap-2">
+            <NavLink
+              to="/admin"
+              className={`p-2 rounded-full transition-all duration-200 group ${isLightHero ? 'hover:bg-violet-100 text-slate-500 hover:text-violet-600' : 'hover:bg-white/15 text-white/60 hover:text-white'}`}
+              title="Admin Dashboard"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+            </NavLink>
             {isLightHero ? (
               <motion.button
                 whileHover={{ scale: 1.04 }}
@@ -195,6 +202,14 @@ const Navbar = () => {
                   )}
                 </NavLink>
               ))}
+              <NavLink
+                to="/admin"
+                onClick={() => setShowMenu(false)}
+                className={`w-full text-center py-2 text-sm font-medium ${mobileTextColor} hover:opacity-100 transition-opacity flex items-center justify-center gap-2`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+                Admin
+              </NavLink>
               <button
                 onClick={() => setShowMenu(false)}
                 className={`mt-1 w-full py-2.5 rounded-full text-sm font-semibold ${mobileButtonBg} ${mobileButtonColor} transition-all duration-200`}
