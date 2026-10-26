@@ -199,16 +199,7 @@ export default function BlogDetail() {
             <div className="relative z-10 text-center">
               <div className="coming-soon-animate coming-soon-pulse mb-4">
                 <span
-                  className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #7c3aed 0%, #06b6d4 50%, #10b981 100%)",
-                    backgroundSize: "200% 200%",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    animation: "pulse-gradient 4s ease-in-out infinite",
-                  }}
+                  className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900"
                 >
                   Coming Soon
                 </span>

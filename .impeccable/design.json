@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T12:00:00Z",
+  "title": "Design System: The Tech Space (TTS)",
+  "extensions": {
+    "colorMeta": {
+      "brand": { "role": "primary", "displayName": "TTS Violet", "canonical": "#6d28d9", "tonalRamp": ["#2e1065", "#4c1d95", "#5b21b6", "#6d28d9", "#7c3aed", "#a78bfa", "#c4b5fd", "#efeafe"] },
+      "brand-bright": { "role": "primary", "displayName": "Bright Violet", "canonical": "#7c3aed", "tonalRamp": ["#2e1065", "#4c1d95", "#6d28d9", "#7c3aed", "#8b5cf6", "#a78bfa", "#ddd6fe", "#f5f3ff"] },
+      "brand-soft": { "role": "primary", "displayName": "Violet Wash", "canonical": "#efeafe", "tonalRamp": ["#2e1065", "#4c1d95", "#6d28d9", "#a78bfa", "#c4b5fd", "#ddd6fe", "#efeafe", "#faf8ff"] },
+      "canvas": { "role": "neutral", "displayName": "Drafting Canvas", "canonical": "#f6f6f9", "tonalRamp": ["#0b0b14", "#2a2a38", "#5a5a6e", "#8a8a9c", "#cfcfda", "#e3e3ea", "#f6f6f9", "#ffffff"] },
+      "panel": { "role": "neutral", "displayName": "Panel White", "canonical": "#ffffff", "tonalRamp": ["#0b0b14", "#2a2a38", "#5a5a6e", "#8a8a9c", "#cfcfda", "#e3e3ea", "#f6f6f9", "#ffffff"] },
+      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "#e3e3ea", "tonalRamp": ["#0b0b14", "#2a2a38", "#5a5a6e", "#8a8a9c", "#cfcfda", "#e3e3ea", "#f6f6f9", "#ffffff"] },
+      "line-strong": { "role": "neutral", "displayName": "Strong Hairline", "canonical": "#cfcfda", "tonalRamp": ["#0b0b14", "#2a2a38", "#5a5a6e", "#8a8a9c", "#cfcfda", "#e3e3ea", "#f6f6f9", "#ffffff"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#0b0b14", "tonalRamp": ["#0b0b14", "#1a1a26", "#2a2a38", "#5a5a6e", "#8a8a9c", "#cfcfda", "#e3e3ea", "#f6f6f9"] },
+      "muted": { "role": "neutral", "displayName": "Graphite Muted", "canonical": "#5a5a6e", "tonalRamp": ["#0b0b14", "#2a2a38", "#44445a", "#5a5a6e", "#8a8a9c", "#b4b4c2", "#e3e3ea", "#f6f6f9"] },
+      "night": { "role": "neutral", "displayName": "Violet Night", "canonical": "#120d24", "tonalRamp": ["#0b0817", "#120d24", "#1c1536", "#2a2342", "#3d3460", "#5b4f8a", "#8f84b8", "#d6d1ea"] },
+      "night-line": { "role": "neutral", "displayName": "Night Rule", "canonical": "#2a2342", "tonalRamp": ["#0b0817", "#120d24", "#1c1536", "#2a2342", "#3d3460", "#5b4f8a", "#8f84b8", "#d6d1ea"] },
+      "night-accent": { "role": "primary", "displayName": "Night Violet", "canonical": "#c4b5fd", "tonalRamp": ["#2e1065", "#4c1d95", "#6d28d9", "#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#f5f3ff"] },
+      "live": { "role": "tertiary", "displayName": "Live Green", "canonical": "#15803d", "tonalRamp": ["#052e16", "#14532d", "#166534", "#15803d", "#16a34a", "#4ade80", "#bbf7d0", "#f0fdf4"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero and page-header h1, one per page. Syne 700, -0.02em, balanced wrap." },
+      "headline": { "displayName": "Headline", "purpose": "Section h2s; no eyebrow above." },
+      "title": { "displayName": "Title", "purpose": "Bento tiles, article panels, contact email link." },
+      "body": { "displayName": "Body", "purpose": "Running copy, labels, admin headings (Operate mode is all Outfit)." },
+      "lede": { "displayName": "Lede", "purpose": "Muted paragraph under a display or headline heading." },
+      "label": { "displayName": "Data Mono", "purpose": "Data only: days, URLs, paths, timestamps, years. Never a kicker." },
+      "status": { "displayName": "Status Mono", "purpose": "Text inside status chips and badges." }
+    },
+    "shadows": [
+      { "name": "frame-lift", "value": "0 30px 80px -30px rgb(18 13 36 / 0.35)", "purpose": "Hero browser frame only." },
+      { "name": "miniature-lift", "value": "0 18px 40px -24px rgb(18 13 36 / 0.4)", "purpose": "Small framed artifacts inside tiles." },
+      { "name": "primary-press", "value": "inset 0 1px 0 rgb(255 255 255 / 0.25), 0 8px 24px -10px rgb(109 40 217 / 0.7)", "purpose": "Primary button at rest." },
+      { "name": "pill-scrolled", "value": "0 8px 30px -12px rgb(18 13 36 / 0.18)", "purpose": "Navbar pill after 50px of scroll." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Entrances, navbar, cursor glides." },
+      { "name": "state", "value": "200ms", "purpose": "Colour and hover transitions on buttons, links, tiles." },
+      { "name": "cursor-glide", "value": "900ms", "purpose": "Team cursors moving between blocks in the hero build." },
+      { "name": "build-step", "value": "1100ms", "purpose": "Interval between hero build steps; holds 4 steps when live, then restarts." },
+      { "name": "terminal-print", "value": "250ms first line, 420ms per line", "purpose": "Build log prints when 35% in view, once." },
+      { "name": "caret", "value": "1s steps(1) infinite", "purpose": "Terminal prompt caret blink." },
+      { "name": "border-beam", "value": "9-10s linear infinite", "purpose": "Single violet light along the terminal and CTA edges; not rendered under reduced motion." },
+      { "name": "reduced-motion", "value": "loops off, transitions 120ms", "purpose": "Finished states are shown instead of animated: built site, printed log, static caret." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Violet pill for the one main action (Book a call, Send message).",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Book a call <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 9999px; background: var(--color-brand, #6d28d9); color: #fff; font-family: Outfit, ui-sans-serif, sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 8px 24px -10px rgb(109 40 217 / 0.7); transition: background-color 200ms; } .ds-btn-primary svg { transition: transform 200ms; } .ds-btn-primary:hover { background: var(--color-brand-bright, #7c3aed); } .ds-btn-primary:hover svg { transform: translateX(2px); } .ds-btn-primary:focus-visible { outline: 2px solid #6d28d9; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "White pill with a hairline ring for the second action.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">See the 7-day build</a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 9999px; background: #fff; color: #0b0b14; font-family: Outfit, ui-sans-serif, sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: inset 0 0 0 1px #cfcfda; transition: box-shadow 200ms; } .ds-btn-secondary:hover { box-shadow: inset 0 0 0 1px rgb(11 11 20 / 0.4); } .ds-btn-secondary:focus-visible { outline: 2px solid #6d28d9; outline-offset: 2px; }"
+    },
+    {
+      "name": "Light Button on Night",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "White pill used on violet-night bands.",
+      "html": "<div class=\"ds-night-wrap\"><a class=\"ds-btn-light\" href=\"#\">Start your build</a><a class=\"ds-btn-ghost\" href=\"#\">How we work</a></div>",
+      "css": ".ds-night-wrap { display: flex; gap: 12px; padding: 24px; background: #120d24; border-radius: 16px; } .ds-btn-light, .ds-btn-ghost { display: inline-flex; align-items: center; padding: 12px 24px; border-radius: 9999px; font-family: Outfit, ui-sans-serif, sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; transition: background-color 200ms; } .ds-btn-light { background: #fff; color: #120d24; } .ds-btn-light:hover { background: rgb(255 255 255 / 0.9); } .ds-btn-ghost { background: rgb(255 255 255 / 0.05); color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2); } .ds-btn-ghost:hover { background: rgb(255 255 255 / 0.1); } .ds-btn-light:focus-visible, .ds-btn-ghost:focus-visible { outline: 2px solid #6d28d9; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labelled field with a strong hairline and violet focus ring.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-label\">Email address *</span><input class=\"ds-input\" type=\"email\" placeholder=\"john@example.com\"></label>",
+      "css": ".ds-field { display: block; font-family: Outfit, ui-sans-serif, sans-serif; } .ds-label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: rgb(11 11 20 / 0.85); } .ds-input { width: 100%; padding: 10px 14px; border: 1px solid #cfcfda; border-radius: 8px; background: #fff; color: #0b0b14; font: inherit; font-size: 16px; transition: border-color 200ms, box-shadow 200ms; } .ds-input::placeholder { color: #5a5a6e; } .ds-input:focus { outline: none; border-color: #6d28d9; box-shadow: 0 0 0 2px rgb(109 40 217 / 0.3); }"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "status-done",
+      "description": "Dot plus lowercase mono label in three tones: done, live, next.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-status ds-done\"><i></i>done</span><span class=\"ds-status ds-live\"><i></i>live</span><span class=\"ds-status ds-next\"><i></i>products announced soon</span></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; flex-wrap: wrap; } .ds-status { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 9999px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; } .ds-status i { width: 6px; height: 6px; border-radius: 9999px; } .ds-done { background: #efeafe; color: #6d28d9; box-shadow: inset 0 0 0 1px rgb(109 40 217 / 0.15); } .ds-done i { background: #6d28d9; } .ds-live { background: #f0fdf4; color: #15803d; box-shadow: inset 0 0 0 1px rgb(21 128 61 / 0.15); } .ds-live i { background: #15803d; } .ds-next { background: #fff; color: #5a5a6e; box-shadow: inset 0 0 0 1px #cfcfda; } .ds-next i { background: #cfcfda; }"
+    },
+    {
+      "name": "Ticked Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "White panel, hairline border, corner registration ticks; hover shifts border to violet when interactive.",
+      "html": "<a class=\"ds-panel\" href=\"#\"><h3 class=\"ds-panel-title\">Brand &amp; graphic design</h3><p class=\"ds-panel-body\">Logos, colours and everything printed or posted.</p></a>",
+      "css": ".ds-panel { position: relative; display: block; max-width: 320px; padding: 28px; border: 1px solid #e3e3ea; border-radius: 12px; background: #fff; text-decoration: none; transition: border-color 200ms; } .ds-panel::before, .ds-panel::after { content: ''; position: absolute; inset: -5px; pointer-events: none; } .ds-panel::before { background: linear-gradient(#cfcfda,#cfcfda) top left / 9px 1px no-repeat, linear-gradient(#cfcfda,#cfcfda) top left / 1px 9px no-repeat, linear-gradient(#cfcfda,#cfcfda) top right / 9px 1px no-repeat, linear-gradient(#cfcfda,#cfcfda) top right / 1px 9px no-repeat; } .ds-panel::after { background: linear-gradient(#cfcfda,#cfcfda) bottom left / 9px 1px no-repeat, linear-gradient(#cfcfda,#cfcfda) bottom left / 1px 9px no-repeat, linear-gradient(#cfcfda,#cfcfda) bottom right / 9px 1px no-repeat, linear-gradient(#cfcfda,#cfcfda) bottom right / 1px 9px no-repeat; } .ds-panel:hover { border-color: rgb(109 40 217 / 0.5); } .ds-panel:focus-visible { outline: 2px solid #6d28d9; outline-offset: 2px; } .ds-panel-title { margin: 0; font-family: Syne, Outfit, sans-serif; font-size: 20px; font-weight: 700; color: #0b0b14; } .ds-panel-body { margin: 8px 0 0; font-family: Outfit, sans-serif; color: #5a5a6e; }"
+    },
+    {
+      "name": "Navbar Pill",
+      "kind": "nav",
+      "refersTo": "nav-pill",
+      "description": "Floating white pill with muted links, violet underline on active, violet CTA.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-logo\">The<b>Tech</b>Space</span><span class=\"ds-links\"><a class=\"ds-link ds-active\" href=\"#\">Home</a><a class=\"ds-link\" href=\"#\">Services</a><a class=\"ds-link\" href=\"#\">Team</a></span><a class=\"ds-cta\" href=\"#\">Book a call</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 8px 8px 16px; border: 1px solid #e3e3ea; border-radius: 9999px; background: rgb(255 255 255 / 0.9); box-shadow: 0 8px 30px -12px rgb(18 13 36 / 0.18); font-family: Outfit, sans-serif; } .ds-logo { font-size: 14px; font-weight: 700; color: #0b0b14; } .ds-logo b { color: #6d28d9; } .ds-links { display: flex; gap: 24px; } .ds-link { position: relative; padding: 4px 0; font-size: 14px; font-weight: 500; color: #5a5a6e; text-decoration: none; transition: color 200ms; } .ds-link::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; border-radius: 9999px; background: #6d28d9; transform: scaleX(0); transform-origin: left; transition: transform 300ms ease-out; } .ds-link:hover, .ds-active { color: #0b0b14; } .ds-link:hover::after, .ds-active::after { transform: scaleX(1); } .ds-link:focus-visible, .ds-cta:focus-visible { outline: 2px solid #6d28d9; outline-offset: 2px; } .ds-cta { padding: 10px 20px; border-radius: 9999px; background: #6d28d9; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; transition: background-color 200ms; } .ds-cta:hover { background: #7c3aed; }"
+    },
+    {
+      "name": "Terminal Build Log",
+      "kind": "custom",
+      "refersTo": "terminal-panel",
+      "description": "Night panel printing the 7-day build as a terminal log with a blinking caret.",
+      "html": "<div class=\"ds-term\"><div class=\"ds-term-head\"><span>tts ship --site yourbusiness.com</span><span>7 days</span></div><ol class=\"ds-term-log\"><li><span class=\"ds-day\">day 01</span><span class=\"ds-step\">Brief and plan</span><span class=\"ds-out\">→ sitemap.md</span></li><li class=\"ds-launch\"><span class=\"ds-day\">day 07</span><span class=\"ds-step\">Launch</span><span class=\"ds-out\">→ live</span></li></ol><div class=\"ds-term-foot\">$ <i class=\"ds-caret\"></i></div></div>",
+      "css": ".ds-term { max-width: 520px; border: 1px solid #2a2342; border-radius: 16px; background: #0b0817; color: #fff; font-family: Outfit, sans-serif; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4); } .ds-term-head, .ds-term-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgb(255 255 255 / 0.6); } .ds-term-head { border-bottom: 1px solid #2a2342; } .ds-term-foot { justify-content: flex-start; border-top: 1px solid #2a2342; color: rgb(255 255 255 / 0.5); } .ds-term-log { margin: 0; padding: 16px 20px; list-style: none; } .ds-term-log li { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: baseline; padding: 8px; border-radius: 8px; } .ds-day, .ds-out { font-family: 'JetBrains Mono', monospace; font-size: 12px; } .ds-day { color: #c4b5fd; } .ds-out { color: rgb(255 255 255 / 0.45); } .ds-step { font-weight: 600; } .ds-launch { background: rgb(255 255 255 / 0.04); } .ds-launch .ds-day, .ds-launch .ds-out { color: #4ade80; } .ds-caret { display: inline-block; width: 8px; height: 16px; background: #c4b5fd; animation: ds-blink 1s steps(1) infinite; } @keyframes ds-blink { 50% { opacity: 0; } } @media (prefers-reduced-motion: reduce) { .ds-caret { animation: none; } }"
+    },
+    {
+      "name": "Admin Nav Item",
+      "kind": "nav",
+      "refersTo": "admin-nav-item-active",
+      "description": "Operate-mode sidebar item: muted at rest, violet wash when active, mono unread badge.",
+      "html": "<div class=\"ds-side\"><a class=\"ds-item ds-on\" href=\"#\">Overview</a><a class=\"ds-item\" href=\"#\">Messages <span class=\"ds-badge\">3</span></a></div>",
+      "css": ".ds-side { width: 248px; padding: 12px; background: #fff; border-right: 1px solid #e3e3ea; font-family: Outfit, sans-serif; } .ds-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #5a5a6e; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-item:hover { background: #f6f6f9; color: #0b0b14; } .ds-on, .ds-on:hover { background: #efeafe; color: #6d28d9; } .ds-item:focus-visible { outline: 2px solid #6d28d9; outline-offset: 2px; } .ds-badge { padding: 1px 6px; border-radius: 6px; background: #6d28d9; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Violet, engineered",
+    "overview": "The site is a working surface, not a brochure. A cool off-white canvas carries white panels drawn with 1px hairline rules and engineering-drawing registration ticks at their corners, as if each panel were a part on a drawing sheet. One violet does all the signalling: action, focus and selected state. Deep violet-night panels are where the system goes dark, reserved for the terminal build log and the closing call to action. The original TTS violet and Syne/Outfit pairing were kept by the owner's instruction (\"maintain the original theme, techy and well built\"); what changed is that the theme now reads as built rather than decorated.\n\nDensity is moderate and calm: generous section rhythm (96 to 128px), a single 1152px container, and panels that hold real artifacts (an illustrative client site, a browser frame, a terminal log, a search result) instead of icons in circles. Proof comes from showing work being done (named team cursors assembling a site, a seven-day log printing line by line) and from real people with real faces. It explicitly refuses the gradient-glow agency brochure: no glow blobs, no gradient text, no glassmorphism cards, no stock \"global agency\" imagery.\n\nThere is one authored moment, the hero's live build, and the rest of the site is quiet around it. The admin console is the same world in Operate mode: same tokens, no display face, no ticks, tighter radii, denser tables.",
+    "keyCharacteristics": [
+      "Cool off-white canvas, white panels, 1px hairline rules, corner registration ticks.",
+      "One violet signal colour; green is reserved for \"live\".",
+      "Violet-night panels for the terminal and the final CTA only.",
+      "Syne display for public h1/h2 and tile titles, Outfit for everything else, JetBrains Mono for data only.",
+      "One authored motion moment (the hero build); everything else is short state transitions.",
+      "Placeholders are labelled in the UI; no invented metrics."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Violet is the only accent. It marks action, focus and selection; if something violet is not clickable, focused, selected or the single headline highlight, it is wrong.", "section": "colors" },
+      { "name": "The Green Means Live Rule", "body": "Green appears only when something is actually live or published. It is never decoration and never a generic \"success\" tint for marketing copy.", "section": "colors" },
+      { "name": "The Night Is Rare Rule", "body": "Violet-night is used for at most the build log and the closing CTA on a page. Everything else sits on canvas and panel.", "section": "colors" },
+      { "name": "The Data-Only Mono Rule", "body": "JetBrains Mono is for data: days, statuses, timestamps, URLs, paths, counts. It is never a kicker, eyebrow or label above a heading, and never set in tracked uppercase.", "section": "typography" },
+      { "name": "The No Eyebrow Rule", "body": "Section headings are a display title plus an optional lede, nothing above them. The heading says the thing.", "section": "typography" },
+      { "name": "The Blueprint Belongs To The Build Rule", "body": "The 48px violet hairline grid (rgb(109 40 217 / 0.07), radially masked) appears only on the home hero, where it is the working canvas the live build is assembled on. Every other surface (page headers, CTA, admin, login) uses plain canvas or panel with hairline rules and corner ticks.", "section": "layout" },
+      { "name": "The Lines Before Shadows Rule", "body": "Panels and cards are separated by a hairline border and the canvas/panel step. A new card gets a border, not a shadow.", "section": "elevation" },
+      { "name": "The Registration Tick Rule", "body": "Public panels that hold content or artifacts carry corner ticks: 9px by 1px strokes in strong hairline, drawn 5px outside each corner. Ticks are a public-site device; Operate mode does not use them.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do put every new surface on Drafting Canvas with Panel White panels, 1px hairline borders and, on the public site, corner registration ticks.",
+      "Do use TTS Violet only for action, focus, selection and the single highlighted phrase in a headline; hover with Bright Violet.",
+      "Do use JetBrains Mono for data (days, statuses, timestamps, URLs, paths, counts) in lowercase at 11 to 12px.",
+      "Do open every section with a Syne headline and an optional muted lede, and nothing above the headline.",
+      "Do label placeholder and illustrative content in the UI with a `next` status chip or a mono caption (\"Illustrative build · not a client project\", \"portfolio update in progress\").",
+      "Do give every motion a reduced-motion state that shows the finished result (completed build, fully printed log) rather than hiding it.",
+      "Do keep state transitions at 200 to 300ms with `cubic-bezier(0.22, 1, 0.36, 1)` for entrances.",
+      "Do use rounded rectangles (8px) for admin buttons and pills for public buttons."
+    ],
+    "donts": [
+      "Don't put a mono or uppercase-tracked kicker or eyebrow above a heading.",
+      "Don't use the blueprint grid anywhere except the home hero canvas.",
+      "Don't add a second accent hue, gradient text, glow blobs, floating orbs, grain overlays or glassmorphism cards.",
+      "Don't use green for anything that is not actually live or published.",
+      "Don't show invented metrics, client counts, percentages, trend deltas or testimonials; admin KPIs are plain counts.",
+      "Don't put icons in tinted circles on a feature grid; show an authored artifact of the thing instead.",
+      "Don't add a second authored motion moment; the hero build is the one, and the terminal print-on-view is its echo.",
+      "Don't use more than one or two violet-night bands on a page."
+    ]
+  }
+}

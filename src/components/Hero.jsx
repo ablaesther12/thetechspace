@@ -1,442 +1,353 @@
-import { useRef, useState, useEffect, useCallback } from "react";
-import { motion } from "motion/react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router";
+import { motion, useReducedMotion } from "motion/react";
+import { ArrowUp, ArrowRight, Check, MousePointer2 } from "lucide-react";
 
-// ─── Animation variants ──────────────────────────────────────────────────────
-const containerVariants = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.12 } },
-};
+// ─── Hero: "What are we building?" ───────────────────────────────────────────
+// Inspo: Anima (prompt as hero), Builder.io (one coloured word, live cursors),
+// Design Maestro (glowing product frame), Krea/Diffusion (dark canvas, product
+// fills the lower fold). Beams follow the Shadcn Space animated-beam pattern.
 
-const itemVariants = {
-    hidden: { opacity: 0, y: 28 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
-    },
-};
-
-// ─── Star icon ───────────────────────────────────────────────────────────────
-const StarIcon = () => (
-    <svg className="w-4 h-4 fill-amber-400 text-amber-400" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-    </svg>
-);
-
-// ─── Cursor SVG pointer ───────────────────────────────────────────────────────
-const CursorSVG = ({ color }) => (
-    <svg
-        width="20"
-        height="24"
-        viewBox="0 0 20 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ filter: `drop-shadow(0 2px 8px ${color}99)` }}
-    >
-        <path
-            d="M1 1L17.5 9.5L10.5 12L7.5 20L1 1Z"
-            fill={color}
-            stroke="white"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-        />
-    </svg>
-);
-
-// ─── Collaborator cursor data ─────────────────────────────────────────────────
-// Positions use percentage strings so they work across all screen sizes.
-// Each cursor loops through 4 waypoints then returns to the first (seamless).
-const cursors = [
-    {
-        id: 1,
-        name: "Danny",
-        color: "#7c3aed",
-        glow: "rgba(124,58,237,0.30)",
-        // upper-left quadrant, gentle drift
-        path: [
-            { x: "9%", y: "30%" },
-            { x: "16%", y: "22%" },
-            { x: "13%", y: "55%" },
-            { x: "7%", y: "45%" },
-        ],
-        duration: 10,
-        delay: 0,
-    },
-    {
-        id: 2,
-        name: "Esther",
-        color: "#0ea5e9",
-        glow: "rgba(14,165,233,0.28)",
-        // upper-right quadrant
-        path: [
-            { x: "78%", y: "20%" },
-            { x: "85%", y: "38%" },
-            { x: "72%", y: "50%" },
-            { x: "80%", y: "28%" },
-        ],
-        duration: 12,
-        delay: 1.8,
-    },
-    {
-        id: 3,
-        name: "Mon Ami",
-        color: "#10b981",
-        glow: "rgba(16,185,129,0.26)",
-        // lower-right, slow drift
-        path: [
-            { x: "65%", y: "72%" },
-            { x: "72%", y: "60%" },
-            { x: "58%", y: "55%" },
-            { x: "68%", y: "78%" },
-        ],
-        duration: 14,
-        delay: 3.4,
-    },
-    {
-        id: 4,
-        name: "Kofi",
-        color: "#f59e0b",
-        glow: "rgba(245,158,11,0.26)",
-        // lower-left
-        path: [
-            { x: "28%", y: "70%" },
-            { x: "20%", y: "82%" },
-            { x: "33%", y: "60%" },
-            { x: "24%", y: "76%" },
-        ],
-        duration: 11,
-        delay: 5.0,
-    },
+const services = [
+  { id: "website", label: "Website", contactType: "Website Design & Development" },
+  { id: "app", label: "Web or mobile app", contactType: "Web or mobile app" },
+  { id: "uiux", label: "UI/UX design", contactType: "UI/UX Design" },
+  { id: "brand", label: "Branding", contactType: "Graphic Design & Branding" },
+  { id: "marketing", label: "Marketing", contactType: "Marketing & SEO" },
 ];
 
-// ─── Single floating cursor ───────────────────────────────────────────────────
-const FloatingCursor = ({ name, color, glow, path, duration, delay }) => {
-    // Build looping keyframe arrays (append first point to close the loop)
-    const xs = [...path.map((p) => p.x), path[0].x];
-    const ys = [...path.map((p) => p.y), path[0].y];
-    const times = xs.map((_, i) => i / (xs.length - 1));
+// Example briefs typed into the prompt (illustrative, Ghana-local).
+const examples = [
+  "An online store for my fashion brand in Accra…",
+  "A booking app for our clinic in Kumasi…",
+  "A new logo and brand for my restaurant…",
+  "Google and Instagram ads that bring customers to my shop…",
+];
 
-    return (
-        <motion.div
-            aria-hidden="true"
-            className="pointer-events-none absolute z-20"
-            style={{ left: path[0].x, top: path[0].y }}
-            animate={{ left: xs, top: ys }}
-            transition={{
-                duration,
-                delay,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "loop",
-                times,
-            }}
-        >
-            {/* Blur-glow blob behind the cursor */}
-            <motion.div
-                className="absolute rounded-full"
-                style={{
-                    width: 72,
-                    height: 72,
-                    top: -20,
-                    left: -20,
-                    background: `radial-gradient(circle, ${glow} 0%, transparent 70%)`,
-                    filter: "blur(14px)",
-                }}
-                animate={{ scale: [1, 1.25, 1], opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            />
+function useTypedPlaceholder(lines, active) {
+  const [text, setText] = useState(lines[0]);
+  useEffect(() => {
+    if (!active) return;
+    let line = 0, i = 0, deleting = false, id;
+    const tick = () => {
+      const full = lines[line];
+      if (!deleting) {
+        i++;
+        setText(full.slice(0, i));
+        if (i === full.length) { deleting = true; id = setTimeout(tick, 1800); return; }
+      } else {
+        i -= 2;
+        setText(full.slice(0, Math.max(i, 0)));
+        if (i <= 0) { deleting = false; line = (line + 1) % lines.length; }
+      }
+      id = setTimeout(tick, deleting ? 18 : 42);
+    };
+    id = setTimeout(tick, 600);
+    return () => clearTimeout(id);
+  }, [lines, active]);
+  return text;
+}
 
-            {/* Cursor pointer */}
-            <motion.div
-                whileHover={{ scale: 1.18 }}
-                animate={{ rotate: [-2, 2, -2] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-                <CursorSVG color={color} />
-            </motion.div>
+// ─── The prompt box ───────────────────────────────────────────────────────────
+function BriefPrompt() {
+  const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
+  const [brief, setBrief] = useState("");
+  const [picked, setPicked] = useState(["website"]);
+  const placeholder = useTypedPlaceholder(examples, !reduceMotion && brief === "");
 
-            {/* Name tag */}
-            <motion.div
-                className="absolute top-5 left-4 px-2.5 py-[3px] rounded-full text-white text-[11px] font-semibold whitespace-nowrap select-none"
-                style={{
-                    background: color,
-                    boxShadow: `0 2px 14px ${color}66`,
-                    letterSpacing: "0.02em",
-                }}
-                initial={{ opacity: 0, scale: 0.7, y: 4 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: delay + 0.4, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            >
-                {name}
-            </motion.div>
-        </motion.div>
-    );
-};
+  const toggle = (id) =>
+    setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
-// ─── User's own mouse-tracking cursor ────────────────────────────────────────
-const USER_COLOR = "#3D3D3D"; // rose-600 — distinct from the other four
-const USER_GLOW = "rgba(0, 0, 0, 0.28)";
+  const submit = (e) => {
+    e.preventDefault();
+    const chosen = services.filter((s) => picked.includes(s.id));
+    const params = new URLSearchParams();
+    if (brief.trim()) params.set("brief", brief.trim());
+    if (chosen.length) params.set("services", chosen.map((s) => s.contactType).join("|"));
+    navigate(`/contact${params.size ? `?${params}` : ""}#brief`);
+  };
 
-const UserCursor = ({ sectionRef }) => {
-    const [pos, setPos] = useState(null); // null = not yet moved
-    const [visible, setVisible] = useState(false);
-
-    const onMouseMove = useCallback((e) => {
-        const rect = sectionRef.current?.getBoundingClientRect();
-        if (!rect) return;
-        setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-        setVisible(true);
-    }, [sectionRef]);
-
-    const onMouseLeave = useCallback(() => setVisible(false), []);
-    const onMouseEnter = useCallback(() => setVisible(true), []);
-
-    useEffect(() => {
-        const el = sectionRef.current;
-        if (!el) return;
-        el.addEventListener("mousemove", onMouseMove);
-        el.addEventListener("mouseleave", onMouseLeave);
-        el.addEventListener("mouseenter", onMouseEnter);
-        return () => {
-            el.removeEventListener("mousemove", onMouseMove);
-            el.removeEventListener("mouseleave", onMouseLeave);
-            el.removeEventListener("mouseenter", onMouseEnter);
-        };
-    }, [sectionRef, onMouseMove, onMouseLeave, onMouseEnter]);
-
-    if (!pos) return null;
-
-    return (
-        <motion.div
-            aria-hidden="true"
-            className="pointer-events-none absolute z-30"
-            animate={{ left: pos.x, top: pos.y, opacity: visible ? 1 : 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 40, mass: 0.4 }}
-            style={{ left: pos.x, top: pos.y }}
-        >
-            {/* Glow blob */}
-            <motion.div
-                className="absolute rounded-full"
-                style={{
-                    width: 72,
-                    height: 72,
-                    top: -20,
-                    left: -20,
-                    background: `radial-gradient(circle, ${USER_GLOW} 0%, transparent 70%)`,
-                    filter: "blur(14px)",
-                }}
-                animate={{ scale: [1, 1.25, 1], opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-
-            {/* Cursor pointer */}
-            <motion.div
-                animate={{ rotate: [-2, 2, -2] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-                <CursorSVG color={USER_COLOR} />
-            </motion.div>
-
-            {/* Name tag */}
-            <motion.div
-                className="absolute top-5 left-4 px-2.5 py-[3px] rounded-full text-white text-[11px] font-semibold whitespace-nowrap select-none"
-                style={{
-                    background: USER_COLOR,
-                    boxShadow: `0 2px 14px ${USER_COLOR}66`,
-                    letterSpacing: "0.02em",
-                }}
-                initial={{ opacity: 0, scale: 0.7, y: 4 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-                You
-            </motion.div>
-        </motion.div>
-    );
-};
-
-// ─── Hero Section ─────────────────────────────────────────────────────────────
-const HeroSection = () => {
-    const sectionRef = useRef(null);
-
-    return (
-        <section
-            ref={sectionRef}
-            className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-            style={{
-                cursor: "none",
-                background:
-                    "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139,92,246,0.08) 0%, rgba(249,250,251,0) 70%), linear-gradient(180deg, #f5f3ff 0%, #f9fafb 40%, #fff 100%)",
-            }}
-        >
-            {/* Subtle grid */}
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0"
-                style={{
-                    backgroundImage:
-                        "linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px)",
-                    backgroundSize: "52px 52px",
-                }}
-            />
-
-            {/* Top glow orb */}
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-25"
-                style={{
-                    background: "radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%)",
-                    filter: "blur(60px)",
-                }}
-            />
-
-            {/* ── Figma-style floating collaborator cursors ── */}
-            {cursors.map((c) => (
-                <FloatingCursor key={c.id} {...c} />
-            ))}
-
-            {/* ── User's own cursor ── */}
-            <UserCursor sectionRef={sectionRef} />
-
-            {/* ── Main content ── */}
-            <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center pt-32 pb-20">
-                <motion.div
-                    className="flex flex-col items-center gap-7"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
+  return (
+    <form onSubmit={submit} className="relative mx-auto w-full max-w-2xl" aria-label="Start your project">
+      {/* glowing rotating border (shine-border pattern) */}
+      <div aria-hidden="true" className="hero-shine pointer-events-none absolute -inset-px rounded-[22px]" />
+      <div className="relative rounded-[21px] bg-[#0d0a1a]/95 p-3 shadow-[0_30px_80px_-20px_rgb(124_58_237/0.55)] backdrop-blur">
+        <label htmlFor="hero-brief" className="sr-only">What are we building?</label>
+        <textarea
+          id="hero-brief"
+          rows={2}
+          value={brief}
+          onChange={(e) => setBrief(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) submit(e); }}
+          placeholder={brief ? "" : `What are we building? ${placeholder}`}
+          className="block w-full resize-none bg-transparent px-3 pt-2 text-base leading-relaxed text-white placeholder:text-white/45 focus:outline-none focus-visible:outline-none sm:text-lg"
+        />
+        <div className="mt-2 flex items-end justify-between gap-3">
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="What do you need?">
+            {services.map((s) => {
+              const on = picked.includes(s.id);
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => toggle(s.id)}
+                  aria-pressed={on}
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm ${on
+                    ? "bg-violet-500/20 text-violet-100 ring-1 ring-inset ring-violet-400/60"
+                    : "bg-white/[0.04] text-white/65 ring-1 ring-inset ring-white/10 hover:text-white hover:ring-white/25"
+                  }`}
                 >
-                    {/* Announcement badge */}
-                    <motion.div variants={itemVariants}>
-                        <span
-                            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium tracking-wide border"
-                            style={{
-                                background: "rgba(139,92,246,0.07)",
-                                borderColor: "rgba(139,92,246,0.2)",
-                                color: "#7c3aed",
-                            }}
-                        >
-                            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" aria-hidden="true" />
-                            Your <span className="font-bold italic mx-1">Partner</span> In Digital Innovation
-                        </span>
-                    </motion.div>
+                  {on && <Check className="size-3" aria-hidden="true" />}
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="submit"
+            className="grid size-10 shrink-0 place-items-center rounded-full bg-violet-500 text-white shadow-[0_0_24px_rgb(139_92_246/0.8)] transition hover:bg-violet-400"
+            aria-label="Send brief and book a call"
+          >
+            <ArrowUp className="size-5" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
 
-                    {/* Headline */}
-                    <motion.h1
-                        variants={itemVariants}
-                        className="max-w-4xl text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.12] tracking-tight text-slate-900"
-                    >
-                        Unique websites ready to{" "}
-                        <span
-                            className="italic font-black"
-                            style={{
-                                background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                backgroundClip: "text",
-                            }}
-                        >
-                            convert
-                        </span>{" "}
-                        in less than{" "}
-                        <span
-                            className="italic"
-                            style={{
-                                background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                backgroundClip: "text",
-                            }}
-                        >
-                            7 days
-                        </span>
-                    </motion.h1>
+// ─── Beams from the prompt into the three panels ──────────────────────────────
+function Beams() {
+  const paths = ["M500 0 C 500 60, 167 50, 167 120", "M500 0 L 500 120", "M500 0 C 500 60, 833 50, 833 120"];
+  return (
+    <svg aria-hidden="true" viewBox="0 0 1000 120" preserveAspectRatio="none" className="hidden h-20 w-full md:block">
+      <defs>
+        <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#c4b5fd" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#a78bfa" />
+          <stop offset="1" stopColor="#7c3aed" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {paths.map((d, i) => (
+        <g key={d}>
+          <path d={d} stroke="rgb(255 255 255 / 0.08)" strokeWidth="1.5" fill="none" vectorEffect="non-scaling-stroke" />
+          <path
+            d={d}
+            stroke="url(#beam)"
+            strokeWidth="2"
+            fill="none"
+            vectorEffect="non-scaling-stroke"
+            pathLength="100"
+            className="hero-beam"
+            style={{ animationDelay: `${i * 0.6}s` }}
+          />
+        </g>
+      ))}
+    </svg>
+  );
+}
 
-                    {/* Subheadline */}
-                    <motion.p
-                        variants={itemVariants}
-                        className="max-w-xl text-base sm:text-lg text-slate-500 leading-relaxed"
-                    >
-                        Because a website should be much more than a showcase, we create tools that{" "}
-                        <span className="text-slate-700 font-medium">engage</span>,{" "}
-                        <span className="text-slate-700 font-medium">attract</span>, and{" "}
-                        <span className="text-slate-700 font-medium">convert</span>.
-                    </motion.p>
+// ─── Panel chrome ─────────────────────────────────────────────────────────────
+function Panel({ label, tag, children, className = "" }) {
+  return (
+    <div className={`relative overflow-hidden rounded-2xl border border-white/10 bg-[#0e0b1c]/90 shadow-[0_20px_60px_-25px_rgb(0_0_0/0.8)] backdrop-blur ${className}`}>
+      <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-2.5">
+        <span className="flex items-center gap-2 text-xs font-semibold text-white/80">
+          <span className="size-1.5 rounded-full bg-violet-400 shadow-[0_0_8px_#a78bfa]" aria-hidden="true" />
+          {label}
+        </span>
+        <span className="font-mono text-[10px] text-white/35">{tag}</span>
+      </div>
+      <div className="relative h-[220px]">{children}</div>
+    </div>
+  );
+}
 
-                    {/* CTA button */}
-                    <motion.div variants={itemVariants} className="flex flex-col items-center gap-3">
-                        <motion.button
-                            whileHover={{ scale: 1.06 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="group relative inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-white shadow-xl shadow-violet-500/30 transition-shadow duration-300 hover:shadow-violet-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
-                            style={{ background: "linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)" }}
-                            aria-label="Book a call"
-                        >
-                            Book a call
-                            <svg
-                                className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth={2.5}
-                                viewBox="0 0 24 24"
-                                aria-hidden="true"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                            </svg>
-                            {/* Sheen */}
-                            <span
-                                aria-hidden="true"
-                                className="pointer-events-none absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                style={{ background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)" }}
-                            />
-                        </motion.button>
+const Cursor = ({ name, color, className = "" }) => (
+  <div aria-hidden="true" className={`pointer-events-none absolute z-10 ${className}`}>
+    <MousePointer2 className="size-4 -rotate-12" style={{ color, fill: color }} />
+    <span className="absolute left-3 top-4 whitespace-nowrap rounded-full px-1.5 py-px text-[10px] font-semibold text-white" style={{ background: color }}>
+      {name}
+    </span>
+  </div>
+);
 
-                        {/* Availability indicator */}
-                        <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                            </span>
-                            <span className="font-medium text-slate-600">Available now</span>
-                        </div>
-                    </motion.div>
-
-                    {/* Divider */}
-                    <motion.div
-                        variants={itemVariants}
-                        className="w-48 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent"
-                        aria-hidden="true"
-                    />
-
-
-                </motion.div>
+// Design: an artboard with a selected component
+function DesignPanel() {
+  return (
+    <Panel label="Design" tag="ui/ux · figma">
+      <div className="absolute inset-0 grid grid-cols-[72px_1fr]">
+        <div className="space-y-1.5 border-r border-white/[0.07] p-3" aria-hidden="true">
+          {["Frame", "Navbar", "Hero", "Button", "Cards"].map((l, i) => (
+            <div key={l} className={`rounded px-1.5 py-1 text-[9px] ${i === 3 ? "bg-violet-500/25 text-violet-100" : "text-white/40"}`}>{l}</div>
+          ))}
+        </div>
+        <div className="relative p-4" aria-hidden="true">
+          <div className="h-full rounded-lg bg-white/[0.04] p-3 ring-1 ring-white/10">
+            <div className="h-2 w-10 rounded bg-white/30" />
+            <div className="mt-4 h-3 w-3/4 rounded bg-white/70" />
+            <div className="mt-1.5 h-3 w-1/2 rounded bg-white/70" />
+            <div className="mt-2 h-1.5 w-2/3 rounded bg-white/20" />
+            <div className="relative mt-4 inline-block">
+              <div className="h-6 w-20 rounded-full bg-violet-500" />
+              <div className="absolute -inset-1.5 rounded-[14px] border border-violet-300" />
+              {[["-top-2.5", "-left-2.5"], ["-top-2.5", "-right-2.5"], ["-bottom-2.5", "-left-2.5"], ["-bottom-2.5", "-right-2.5"]].map(([a, b]) => (
+                <span key={a + b} className={`absolute ${a} ${b} size-2 rounded-sm border border-violet-300 bg-[#0e0b1c]`} />
+              ))}
             </div>
+            <div className="mt-4 grid grid-cols-3 gap-1.5">
+              {[0, 1, 2].map((i) => <div key={i} className="h-8 rounded-md bg-white/[0.06] ring-1 ring-white/10" />)}
+            </div>
+          </div>
+          <Cursor name="Emmanuella" color="#ec4899" className="hero-float left-[58%] top-[52%]" />
+        </div>
+      </div>
+    </Panel>
+  );
+}
 
-            {/* ── Bottom blur-fade transition into next section ── */}
-            {/* Layer 1: colour gradient — hero bg fades to the gallery's bg colour */}
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 z-20"
-                style={{
-                    background:
-                        "linear-gradient(to bottom, transparent 0%, #f8fafc 100%)",
-                }}
-            />
-            {/* Layer 2: blurred glass — intensity increases toward the bottom edge */}
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute bottom-0 left-0 right-0 h-36 z-20"
-                style={{
-                    backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)",
-                    maskImage:
-                        "linear-gradient(to bottom, transparent 0%, black 100%)",
-                    WebkitMaskImage:
-                        "linear-gradient(to bottom, transparent 0%, black 100%)",
-                }}
-            />
-        </section>
-    );
-};
+// Build: code typing itself
+const codeLines = [
+  [["c-k", "export default"], ["c-p", " function "], ["c-f", "Hero"], ["c-p", "() {"]],
+  [["c-p", "  return ("]],
+  [["c-p", "    <"], ["c-t", "section"], ["c-a", " className"], ["c-p", "="], ["c-s", "\"hero\""], ["c-p", ">"]],
+  [["c-p", "      <"], ["c-t", "h1"], ["c-p", ">Your business, online</"], ["c-t", "h1"], ["c-p", ">"]],
+  [["c-p", "      <"], ["c-t", "Button"], ["c-a", " to"], ["c-p", "="], ["c-s", "\"/contact\""], ["c-p", " />"]],
+  [["c-p", "    </"], ["c-t", "section"], ["c-p", ">"]],
+  [["c-p", "  );"]],
+  [["c-p", "}"]],
+];
 
-export default HeroSection;
+function BuildPanel() {
+  const reduceMotion = useReducedMotion();
+  const [shown, setShown] = useState(reduceMotion ? codeLines.length : 1);
+  useEffect(() => {
+    if (reduceMotion) return;
+    const id = setInterval(() => setShown((n) => (n >= codeLines.length + 3 ? 1 : n + 1)), 650);
+    return () => clearInterval(id);
+  }, [reduceMotion]);
+
+  return (
+    <Panel label="Build" tag="Hero.jsx" className="md:-translate-y-4">
+      <pre className="absolute inset-0 overflow-hidden p-4 font-mono text-[11px] leading-[1.7]" aria-hidden="true">
+        {codeLines.slice(0, Math.min(shown, codeLines.length)).map((line, i) => (
+          <div key={i} className="flex">
+            <span className="mr-3 w-4 select-none text-right text-white/20">{i + 1}</span>
+            <span>
+              {line.map(([cls, t], j) => <span key={j} className={cls}>{t}</span>)}
+              {i === Math.min(shown, codeLines.length) - 1 && <span className="caret ml-0.5 inline-block h-3 w-1.5 translate-y-0.5 bg-violet-300" />}
+            </span>
+          </div>
+        ))}
+      </pre>
+      <Cursor name="David" color="#0ea5e9" className="hero-float-slow right-[18%] top-[64%]" />
+    </Panel>
+  );
+}
+
+// Grow: a campaign curve drawing itself
+function GrowPanel() {
+  return (
+    <Panel label="Grow" tag="seo · ads · social">
+      <div className="absolute inset-0 p-4" aria-hidden="true">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] text-white/50">Website visits</span>
+          <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">campaign live</span>
+        </div>
+        <svg viewBox="0 0 300 140" className="mt-3 h-[150px] w-full">
+          <defs>
+            <linearGradient id="growFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#8b5cf6" stopOpacity="0.45" />
+              <stop offset="1" stopColor="#8b5cf6" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {[35, 70, 105].map((y) => <line key={y} x1="0" x2="300" y1={y} y2={y} stroke="rgb(255 255 255 / 0.06)" />)}
+          <path d="M0 120 C 40 115, 60 110, 90 100 S 150 92, 180 70 S 240 40, 300 12 L300 140 L0 140Z" fill="url(#growFill)" className="hero-grow-fill" />
+          <path d="M0 120 C 40 115, 60 110, 90 100 S 150 92, 180 70 S 240 40, 300 12" fill="none" stroke="#c4b5fd" strokeWidth="2.5" pathLength="100" className="hero-grow-line" />
+          <circle cx="300" cy="12" r="4" fill="#c4b5fd" className="hero-grow-dot" />
+        </svg>
+        <div className="mt-1 flex justify-between text-[9px] text-white/30">
+          <span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span>
+        </div>
+      </div>
+      <Cursor name="Esther" color="#f59e0b" className="hero-float left-[30%] top-[40%]" />
+    </Panel>
+  );
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] },
+});
+
+export default function HeroSection() {
+  const stars = useMemo(
+    () => Array.from({ length: 36 }, (_, i) => ({ x: (i * 37.3) % 100, y: (i * 61.7) % 70, s: i % 5 === 0 ? 2 : 1, o: 0.15 + ((i * 13) % 40) / 100 })),
+    []
+  );
+
+  return (
+    <section aria-labelledby="hero-title" className="dark relative isolate overflow-hidden bg-[#06040d] text-white">
+      {/* ── Atmosphere ── */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-[-18%] h-[720px] w-[1100px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(124_58_237/0.55),rgb(76_29_149/0.25)_45%,transparent)] blur-2xl" />
+        <div className="hero-aurora absolute left-[12%] top-[8%] h-[360px] w-[420px] rounded-full bg-[radial-gradient(closest-side,rgb(217_70_239/0.28),transparent)] blur-3xl" />
+        <div className="hero-aurora-alt absolute right-[8%] top-[18%] h-[320px] w-[380px] rounded-full bg-[radial-gradient(closest-side,rgb(56_189_248/0.18),transparent)] blur-3xl" />
+        {stars.map((s, i) => (
+          <span key={i} className="absolute rounded-full bg-white" style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.s, height: s.s, opacity: s.o }} />
+        ))}
+        {/* planet horizon behind the studio canvas */}
+        <div className="absolute left-1/2 top-[640px] h-[1400px] w-[2200px] -translate-x-1/2 rounded-[50%] border-t border-violet-300/40 bg-[#06040d] shadow-[0_-30px_120px_-10px_rgb(139_92_246/0.6),inset_0_40px_80px_-40px_rgb(167_139_250/0.35)] md:top-[600px]" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 pt-32 sm:px-6 md:pt-40">
+        <div className="mx-auto max-w-4xl text-center">
+          <motion.h1
+            {...fadeUp(0)}
+            id="hero-title"
+            className="text-[2.6rem] font-bold leading-[1.02] text-white sm:text-6xl lg:text-[4.6rem]"
+          >
+            We design, build and{" "}
+            <span className="text-violet-300 [text-shadow:0_0_40px_rgb(167_139_250/0.65)]">grow</span>{" "}
+            digital products.
+          </motion.h1>
+          <motion.p {...fadeUp(0.1)} className="mx-auto mt-6 max-w-2xl text-lg text-white/65 sm:text-xl">
+            Software, UI/UX and marketing from one Ghanaian team, so you launch sooner without cutting corners.
+          </motion.p>
+        </div>
+
+        <motion.div {...fadeUp(0.2)} className="mt-10">
+          <BriefPrompt />
+          <p className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-white/55">
+            <span>Tell us in a sentence. We reply within 24 hours.</span>
+            <a href="#build-log" className="inline-flex items-center gap-1 font-medium text-white/80 hover:text-white">
+              See how we work <ArrowRight className="size-3.5" aria-hidden="true" />
+            </a>
+          </p>
+        </motion.div>
+
+        {/* ── Studio canvas: one brief → design, build, grow ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mt-6 pb-20 md:mt-4"
+        >
+          <Beams />
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="hidden md:block"><DesignPanel /></div>
+            <BuildPanel />
+            <div className="hidden md:block"><GrowPanel /></div>
+          </div>
+          <p className="mt-4 text-center font-mono text-[11px] text-white/30">illustrative · how a TTS project moves from brief to growth</p>
+        </motion.div>
+      </div>
+
+      {/* fade into the next (night) section */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-night" />
+    </section>
+  );
+}

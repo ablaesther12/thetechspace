@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "graft": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@nanonets/graft",
+        "mcp"
+      ]
+    },
+    "shadcnspace": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "shadcnspace-mcp@latest"
+      ],
+      "env": {}
+    }
+  }
+}

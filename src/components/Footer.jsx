@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { animateScroll as scroll } from 'react-scroll';
 import {
   FaFacebookF,
   FaTwitter,
@@ -10,92 +9,82 @@ import {
 } from 'react-icons/fa';
 import logo1 from '../assets/img/logo1.png';
 
+// Every href here must resolve to a real route. Help Center, Careers, Terms
+// and Privacy were removed until those pages exist.
 const sections = [
   {
-    title: "Quick Links",
+    title: "Company",
     links: [
       { name: "About Us", href: "/about" },
-      { name: "Services", href: "/services" },
-      { name: "Contact", href: "/contact" },
+      { name: "Team", href: "/team" },
       { name: "Projects", href: "/projects" },
+      { name: "Contact", href: "/contact" },
     ],
   },
   {
     title: "Services",
     links: [
-      { name: "Web Development", href: "/services/web-development" },
-      { name: "Graphic Design", href: "/services/graphic-design" },
-      { name: "UI/UX Design", href: "/services/ui-ux" },
-      { name: "Branding", href: "/services/branding" },
+      { name: "Web Development", href: "/services" },
+      { name: "Graphic Design", href: "/services" },
+      { name: "UI/UX Design", href: "/services" },
+      { name: "SEO & Marketing", href: "/services" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { name: "Help Center", href: "/help" },
-      { name: "Blog", href: "/blog" },
-      { name: "Careers", href: "/careers" },
-      { name: "Newsletter", href: "#newsletter" },
+      { name: "Blog", href: "/blogs" },
+      { name: "Newsletter", href: "/#newsletter" },
     ],
   },
 ];
 
+// TODO(content): point these at TheTechSpace's real profiles.
 const socialLinks = [
-  { icon: <FaInstagram className="size-5" />, href: "https://instagram.com", label: "Instagram" },
-  { icon: <FaFacebookF className="size-5" />, href: "https://facebook.com", label: "Facebook" },
-  { icon: <FaTwitter className="size-5" />, href: "https://twitter.com", label: "Twitter" },
-  { icon: <FaPinterest className="size-5" />, href: "https://pinterest.com", label: "Pinterest" },
-];
-
-const legalLinks = [
-  { name: "Terms of Use", href: "/terms" },
-  { name: "Privacy Policy", href: "/privacy" },
+  { icon: <FaInstagram className="size-5" aria-hidden="true" />, href: "https://instagram.com", label: "Instagram" },
+  { icon: <FaFacebookF className="size-5" aria-hidden="true" />, href: "https://facebook.com", label: "Facebook" },
+  { icon: <FaTwitter className="size-5" aria-hidden="true" />, href: "https://twitter.com", label: "Twitter" },
+  { icon: <FaPinterest className="size-5" aria-hidden="true" />, href: "https://pinterest.com", label: "Pinterest" },
 ];
 
 const Footer = () => {
   const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {
-    const checkScrollTop = () => {
-      if (!showScroll && window.pageYOffset > 400) {
-        setShowScroll(true);
-      } else if (showScroll && window.pageYOffset <= 400) {
-        setShowScroll(false);
-      }
-    };
-    window.addEventListener('scroll', checkScrollTop);
+    const checkScrollTop = () => setShowScroll(window.scrollY > 400);
+    window.addEventListener('scroll', checkScrollTop, { passive: true });
     return () => window.removeEventListener('scroll', checkScrollTop);
-  }, [showScroll]);
+  }, []);
 
   const scrollToTop = () => {
-    scroll.scrollToTop();
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
   };
 
   return (
     <>
-      <section className="py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex w-full flex-col justify-between gap-10 lg:flex-row lg:items-start lg:text-left">
+      <footer className="border-t border-line bg-panel pt-20 pb-10">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex w-full flex-col justify-between gap-12 lg:flex-row lg:items-start">
             {/* Left column: Logo, description & socials */}
-            <div className="flex w-full flex-col justify-between gap-6 lg:items-start">
-              <div className="flex items-center gap-2 lg:justify-start">
-                <Link to="/">
-                  <img
-                    src={logo1}
-                    alt="TTS Logo"
-                    title="The Tech Space"
-                    className="h-12"
-                  />
-                </Link>
-                <h2 className="text-xl font-semibold text-gray-900">The Tech Space</h2>
-              </div>
-              <p className="max-w-[70%] text-sm text-gray-500">
-                The Tech Space — building Africa's leading innovation hub for tech, design, and digital solutions.
+            <div className="flex flex-col gap-6 lg:max-w-sm">
+              <Link to="/" className="flex items-center gap-3 self-start rounded-lg">
+                <img src={logo1} alt="" className="h-11 w-11 object-contain" />
+                <span className="text-xl font-semibold text-ink">The Tech Space</span>
+              </Link>
+              <p className="text-sm text-dim">
+                A Ghanaian design, development and marketing studio. We help you launch sooner, without cutting corners.
               </p>
-              <ul className="flex items-center space-x-6 text-gray-400">
-                {socialLinks.map((social, idx) => (
-                  <li key={idx} className="font-medium hover:text-gray-900 transition-colors">
-                    <a href={social.href} aria-label={social.label} target="_blank" rel="noopener noreferrer">
+              <ul className="flex items-center gap-2 text-dim">
+                {socialLinks.map((social) => (
+                  <li key={social.label}>
+                    <a
+                      href={social.href}
+                      aria-label={social.label}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="grid place-items-center w-10 h-10 rounded-full hover:bg-canvas hover:text-ink transition-colors"
+                    >
                       {social.icon}
                     </a>
                   </li>
@@ -104,48 +93,40 @@ const Footer = () => {
             </div>
 
             {/* Right columns: Link sections */}
-            <div className="grid w-full gap-6 md:grid-cols-3 lg:gap-20">
-              {sections.map((section, sectionIdx) => (
-                <div key={sectionIdx}>
-                  <h3 className="mb-4 font-bold text-gray-900">{section.title}</h3>
-                  <ul className="space-y-3 text-sm text-gray-500">
-                    {section.links.map((link, linkIdx) => (
-                      <li
-                        key={linkIdx}
-                        className="font-medium hover:text-gray-900 transition-colors"
-                      >
-                        <Link to={link.href}>{link.name}</Link>
+            <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:gap-20">
+              {sections.map((section) => (
+                <div key={section.title}>
+                  <h2 className="mb-4 text-sm font-semibold text-ink">{section.title}</h2>
+                  <ul className="space-y-3 text-sm text-dim">
+                    {section.links.map((link) => (
+                      <li key={link.name}>
+                        <Link to={link.href} className="hover:text-ink transition-colors">
+                          {link.name}
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 </div>
               ))}
-            </div>
+            </nav>
           </div>
 
           {/* Bottom bar */}
-          <div className="mt-8 flex flex-col justify-between gap-4 border-t border-gray-200 py-8 text-xs font-medium text-gray-500 md:flex-row md:items-center md:text-left">
-            <p className="order-2 lg:order-1">
-              &copy; {new Date().getFullYear()} TTS - The Tech Space. All Rights Reserved.
-            </p>
-            <ul className="order-1 flex flex-col gap-2 md:order-2 md:flex-row">
-              {legalLinks.map((link, idx) => (
-                <li key={idx} className="hover:text-gray-900 transition-colors">
-                  <Link to={link.href}>{link.name}</Link>
-                </li>
-              ))}
-            </ul>
+          <div className="mt-16 border-t border-line pt-8 text-xs font-medium text-dim">
+            <p>&copy; {new Date().getFullYear()} TTS - The Tech Space. All Rights Reserved.</p>
           </div>
         </div>
-      </section>
+      </footer>
 
       {/* Scroll to Top Button */}
       {showScroll && (
         <button
+          type="button"
           onClick={scrollToTop}
-          className="fixed bottom-10 right-10 bg-brand-gold text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition-all duration-300 z-50"
+          aria-label="Back to top"
+          className="fixed bottom-6 right-6 z-40 grid h-12 w-12 place-items-center rounded-full bg-ink text-white shadow-lg shadow-black/20 transition-colors hover:bg-brand"
         >
-          <FaArrowUp className="w-6 h-6" />
+          <FaArrowUp className="h-5 w-5" aria-hidden="true" />
         </button>
       )}
     </>

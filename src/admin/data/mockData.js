@@ -126,3 +126,13 @@ export const mockSubscribers = [
     { id: "3", email: "techfan@gmail.com", subscribedAt: "Jan 10, 2025" },
     { id: "4", email: "dev.ops@hotmail.com", subscribedAt: "Jan 9, 2025" },
 ];
+
+// Monthly contact-form enquiries by type (sample data for the dashboard chart)
+export const mockEnquiries = [
+    { month: "May", websites: 6, design: 3, marketing: 2 },
+    { month: "Jun", websites: 8, design: 4, marketing: 3 },
+    { month: "Jul", websites: 7, design: 5, marketing: 4 },
+    { month: "Aug", websites: 11, design: 4, marketing: 5 },
+    { month: "Sep", websites: 9, design: 6, marketing: 6 },
+    { month: "Oct", websites: 13, design: 7, marketing: 5 },
+];

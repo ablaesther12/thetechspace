@@ -1,74 +1,51 @@
-import {
-    AreaChart,
-    Area,
-    ResponsiveContainer,
-    Tooltip,
-} from "recharts";
-
-const data = [
-    { name: "Jan", value: 20 },
-    { name: "Feb", value: 40 },
-    { name: "Mar", value: 60 },
-    { name: "Apr", value: 80 },
-    { name: "May", value: 100 },
-    { name: "Jun", value: 130 },
-    { name: "Jul", value: 160 },
+// Decorative growth curve under the stats. It isn't real data, so it's a
+// plain SVG instead of a charting library (recharts added ~350 KB to the
+// homepage bundle for this one shape).
+const CURVE = "M0 168 C 120 160, 220 148, 333 128 S 560 96, 667 72 S 880 30, 1000 8";
+// TODO(content): replace with verified figures before launch.
+const stats = [
+    { value: "50,000+", label: "Projects Completed" },
+    { value: "99.9%", label: "Client Satisfaction" },
+    { value: "1,200+", label: "Happy Clients" },
+    { value: "24/7", label: "Support Available" },
 ];
 
 export default function StatsSection() {
     return (
-        <section className="w-full max-w-6xl mx-auto text-left py-32">
-            <div className="px-4">
-                <h3 className="text-lg sm:text-xl lg:text-4xl font-medium text-gray-900 mb-16">
+        <section aria-labelledby="stats-heading" className="w-full max-w-6xl mx-auto text-left py-24 md:py-32">
+            <div className="px-4 sm:px-6">
+                <h2 id="stats-heading" className="max-w-4xl text-2xl sm:text-3xl lg:text-4xl font-semibold leading-snug text-slate-900 mb-12 md:mb-16">
                     Proven results you can trust.{" "}
-                    <span className="text-gray-500 text-sm sm:text-base lg:text-4xl">
+                    <span className="text-slate-500">
                         We deliver quality solutions, build strong client relationships, and provide dependable support to help your business grow with confidence.
                     </span>
-                </h3>
+                </h2>
 
-                {/* Stats grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-8">
-                    <div>
-                        <p className="text-3xl font-medium text-gray-900">50,000+</p>
-                        <p className="text-gray-500 text-md">Projects Completed</p>
-                    </div>
-                    <div>
-                        <p className="text-3xl font-medium text-gray-900">99.9%</p>
-                        <p className="text-gray-500 text-md">Client Satisfaction</p>
-                    </div>
-                    <div>
-                        <p className="text-3xl font-medium text-gray-900">1,200+</p>
-                        <p className="text-gray-500 text-md">Happy Clients</p>
-                    </div>
-                    <div>
-                        <p className="text-3xl font-medium text-gray-900">24/7</p>
-                        <p className="text-gray-500 text-md">Support Available</p>
-                    </div>
-                </div>
+                <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8">
+                    {stats.map((stat) => (
+                        <div key={stat.label} className="flex flex-col-reverse gap-1">
+                            <dt className="text-slate-600 text-sm sm:text-base">{stat.label}</dt>
+                            <dd className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">{stat.value}</dd>
+                        </div>
+                    ))}
+                </dl>
             </div>
 
-            {/* Area Chart */}
-            <div className="w-full h-48 mt-8">
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data}>
-                        <defs>
-                            <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <Tooltip />
-                        <Area
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#3b82f6"
-                            strokeWidth={2}
-                            fillOpacity={1}
-                            fill="url(#colorBlue)"
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
-            </div>
+            <svg
+                className="w-full h-40 md:h-48 mt-8"
+                viewBox="0 0 1000 176"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+            >
+                <defs>
+                    <linearGradient id="statsFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.25} />
+                        <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                    </linearGradient>
+                </defs>
+                <path d={`${CURVE} L1000 176 L0 176 Z`} fill="url(#statsFill)" />
+                <path d={CURVE} fill="none" stroke="#7c3aed" strokeWidth={2} vectorEffect="non-scaling-stroke" />
+            </svg>
         </section>
     );
 }

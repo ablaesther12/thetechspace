@@ -1,244 +1,106 @@
-import { useEffect, useRef } from "react";
+// Blog — Shadcn Space blog-01 grid (lead post spans two columns) with
+// shadcn/ui category filters.
+import { useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, User, Calendar } from "lucide-react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "motion/react";
+import { ArrowUpRight, Clock } from "lucide-react";
 import { blogPosts } from "../data/blogsData";
+import PageHeader from "../components/ui/PageHeader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { FinalCta } from "../components/home/PeopleAndLabs";
+import { FeaturedPostCard } from "@/components/sections/HeroVisuals";
 
-gsap.registerPlugin(ScrollTrigger);
+const categories = ["All", ...new Set(blogPosts.map((p) => p.category))];
 
-// ─── Category badge color map ─────────────────────────────────────────────────
-const categoryStyles = {
-  violet: {
-    bg: "bg-violet-500",
-    text: "text-white",
-    border: "border-violet-200",
-    light: "bg-violet-50 text-violet-700",
-  },
-  cyan: {
-    bg: "bg-cyan-500",
-    text: "text-white",
-    border: "border-cyan-200",
-    light: "bg-cyan-50 text-cyan-700",
-  },
-  emerald: {
-    bg: "bg-emerald-500",
-    text: "text-white",
-    border: "border-emerald-200",
-    light: "bg-emerald-50 text-emerald-700",
-  },
-};
-
-// ─── Blog Card ────────────────────────────────────────────────────────────────
-const BlogCard = ({ post, index }) => {
-  const style = categoryStyles[post.categoryColor] || categoryStyles.violet;
-
+function PostCard({ post, lead, index }) {
   return (
-    <Link
-      to={`/blogs/${post.slug}`}
-      className="gs-animate group block rounded-2xl bg-white border border-slate-200/80 overflow-hidden transition-[box-shadow,transform] duration-300 hover:shadow-2xl hover:shadow-slate-200/60 hover:-translate-y-2"
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, delay: Math.min(index, 3) * 0.1, ease: "easeInOut" }}
+      className={lead ? "sm:col-span-2" : ""}
     >
-      {/* Image */}
-      <div className="relative aspect-[16/10] overflow-hidden">
-        <img
-          src={post.image}
-          alt={post.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          loading="lazy"
-          decoding="async"
-        />
-        {/* Category badge */}
-        <div className="absolute top-4 right-4">
-          <span
-            className={`inline-block ${style.bg} ${style.text} text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide`}
-          >
-            {post.category}
-          </span>
-        </div>
-        {/* Bottom gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-
-      {/* Content */}
-      <div className="p-5 pb-6">
-        {/* Author + Date row */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center">
-              <User className="w-3 h-3 text-slate-500" />
+      <Link to={`/blogs/${post.slug}`} className="group flex h-full flex-col rounded-2xl">
+        <Card className="h-full gap-0 overflow-hidden rounded-2xl p-0 shadow-none transition-shadow duration-300 group-hover:shadow-lg">
+          <CardContent className="flex h-full flex-col p-0">
+            <div className={`relative w-full overflow-hidden bg-muted ${lead ? "aspect-video sm:aspect-auto sm:h-96" : "aspect-[16/10]"}`}>
+              <img
+                src={post.image}
+                alt=""
+                loading={index === 0 ? "eager" : "lazy"}
+                className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+              />
+              <Badge className="absolute left-4 top-4 h-7 px-3 font-normal">{post.category}</Badge>
             </div>
-            <span className="font-medium text-slate-500">{post.author}</span>
-          </div>
-          <span className="text-slate-300">·</span>
-          <span>{post.date}</span>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-lg font-bold text-slate-900 leading-snug mb-2 group-hover:text-violet-600 transition-colors duration-300">
-          {post.title}
-        </h3>
-
-        {/* Excerpt */}
-        <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">
-          {post.excerpt}
-        </p>
-      </div>
-    </Link>
-  );
-};
-
-// ─── Featured Post Hero ───────────────────────────────────────────────────────
-const FeaturedPost = ({ post }) => {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".featured-animate", {
-        y: 30,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.1,
-        ease: "power3.out",
-        delay: 0.2,
-      });
-    }, ref);
-    return () => ctx.revert();
-  }, []);
-
-  if (!post) return null;
-
-  return (
-    <div ref={ref} className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-      <Link
-        to={`/blogs/${post.slug}`}
-        className="group relative block rounded-3xl overflow-hidden bg-slate-900 shadow-2xl shadow-slate-900/20"
-      >
-        <div className="grid lg:grid-cols-2 min-h-[400px]">
-          {/* Text side */}
-          <div className="relative z-10 flex flex-col justify-center p-8 sm:p-12">
-            <div className="featured-animate">
-              <span className="inline-flex items-center gap-1.5 mb-5">
-                <span className="text-slate-300 text-sm font-medium">Featured</span>
-                <span className="bg-violet-500 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-md tracking-wide">
-                  Post
+            <div className="flex flex-1 flex-col gap-3 p-6">
+              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>{post.date}</span>
+                <span aria-hidden="true">·</span>
+                <span className="inline-flex items-center gap-1"><Clock className="size-3.5" aria-hidden="true" />{post.readTime}</span>
+              </p>
+              <h2 className={`font-semibold text-foreground group-hover:text-primary ${lead ? "text-2xl sm:text-3xl" : "text-xl"}`}>
+                {post.title}
+              </h2>
+              <p className="line-clamp-2 text-muted-foreground">{post.excerpt}</p>
+              <div className="mt-auto flex items-center justify-between pt-3 text-sm">
+                <span className="font-medium text-foreground/80">{post.author}</span>
+                <span className="inline-flex items-center gap-1 font-medium text-primary">
+                  Read <ArrowUpRight className="size-4 transition-transform group-hover:rotate-45" aria-hidden="true" />
                 </span>
-              </span>
+              </div>
             </div>
-
-            <h2 className="featured-animate text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-white leading-[1.15] mb-4 tracking-tight">
-              {post.title}
-            </h2>
-
-            <p className="featured-animate text-slate-400 text-base leading-relaxed mb-6 max-w-md">
-              {post.excerpt}
-            </p>
-
-            <div className="featured-animate">
-              <span className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-colors duration-200 group-hover:bg-violet-500">
-                Read More
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-              </span>
-            </div>
-          </div>
-
-          {/* Image side */}
-          <div className="relative lg:absolute lg:right-0 lg:top-0 lg:bottom-0 lg:w-1/2">
-            <img
-              src={post.image}
-              alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            {/* Overlay gradient for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/40 to-transparent hidden lg:block" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent lg:hidden" />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </Link>
-    </div>
+    </motion.div>
   );
-};
+}
 
-// ─── Blog Page ────────────────────────────────────────────────────────────────
 export default function BlogPage() {
-  const gridRef = useRef(null);
-
-  const featuredPost = blogPosts.find((p) => p.featured);
-  const regularPosts = blogPosts.filter((p) => !p.featured);
-
-  // GSAP staggered entrance animation for the card grid
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const cards = gridRef.current?.querySelectorAll(".gs-animate");
-      if (!cards || cards.length === 0) return;
-
-      gsap.fromTo(
-        cards,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.7,
-          stagger: 0.1,
-          ease: "power3.out",
-          delay: 0.6,
-        }
-      );
-    }, gridRef);
-
-    return () => ctx.revert();
-  }, []);
+  const [active, setActive] = useState("All");
+  const ordered = [...blogPosts].sort((a, b) => Number(b.featured) - Number(a.featured));
+  const posts = ordered.filter((p) => active === "All" || p.category === active);
 
   return (
-    <div className="min-h-screen bg-slate-50 relative">
-      {/* Subtle grid background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px)",
-          backgroundSize: "52px 52px",
-        }}
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        crumb="Blog"
+        badge="Insights"
+        title="Insights from the studio."
+        lede="Tutorials, ideas and the latest in tech, design and growth, straight from our team."
+        aside={<FeaturedPostCard post={blogPosts.find((p) => p.featured)} />}
       />
 
-      {/* Top glow */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full opacity-20"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)",
-          filter: "blur(80px)",
-        }}
-      />
+      <section aria-label="Articles" className="py-16 md:py-20">
+        <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 sm:px-6">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
+            {categories.map((cat) => (
+              <Button
+                key={cat}
+                type="button"
+                size="sm"
+                variant={active === cat ? "default" : "outline"}
+                aria-pressed={active === cat}
+                onClick={() => setActive(cat)}
+                className="rounded-full"
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
 
-      <div className="relative z-10">
-        {/* Page header */}
-        <div className="pt-24 pb-12 text-center px-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3">
-            Our Blog
-          </h1>
-          <p className="text-lg text-slate-500 max-w-xl mx-auto">
-            Insights, tutorials, and the latest in tech — straight from our
-            team.
-          </p>
-        </div>
-
-        {/* Featured post */}
-        <FeaturedPost post={featuredPost} />
-
-        {/* Blog cards grid */}
-        <div
-          ref={gridRef}
-          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24"
-        >
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {regularPosts.map((post, i) => (
-              <BlogCard key={post.id} post={post} index={i} />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {posts.map((post, i) => (
+              <PostCard key={post.id} post={post} index={i} lead={i === 0 && active === "All"} />
             ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      <FinalCta />
     </div>
   );
 }
