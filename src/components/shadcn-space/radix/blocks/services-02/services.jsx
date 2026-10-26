@@ -87,7 +87,7 @@ function Services({
                                 {data?.map((value, index) => (
                                     <div
                                         key={index}
-                                        onMouseEnter={(e) => handleMouseEnter(index)}
+                                        onMouseEnter={() => handleMouseEnter(index)}
                                         className="group py-6 xl:py-10 border-t border-border cursor-pointer flex xl:flex-row flex-col xl:items-center items-start justify-between xl:gap-10 gap-1 relative">
                                         <h3 className={cn("group-hover:text-teal-400 py-1 text-2xl md:text-3xl font-semibold text-foreground max-w-2xs w-full", activeIndex === index ? "text-teal-400" : "")}>
                                             {value.heading}

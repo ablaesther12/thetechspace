@@ -5,6 +5,7 @@
 //
 // Resolve when the message is on its way; throw to make the form show its
 // error state (which points visitors to hello@thetechspace.com as a fallback).
+// eslint-disable-next-line no-unused-vars -- stub until the backend's POST /api/contact exists
 export async function sendContactMessage(message) {
   // TODO(you): choose how messages are delivered and implement it here.
   throw new Error("Contact delivery is not wired up yet");
