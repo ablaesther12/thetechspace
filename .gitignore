@@ -25,3 +25,21 @@ dist-ssr
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
+
+# Environment & secrets: never commit real credentials.
+# Keep a documented template as .env.example.
+.env
+.env.*
+!.env.example
+
+# Backend (Node + Express + Prisma)
+Backend/node_modules/
+Backend/dist/
+Backend/uploads/
+Backend/coverage/
+Backend/prisma/*.db
+Backend/prisma/*.db-journal
+
+# Local tooling output
+.playwright-mcp/
+coverage/

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send } from "lucide-react";
+import { Send, Loader2, CheckCircle2 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 
-function NewsletterSignup({ onSubmit, className = "" }) {
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function NewsletterSignup({ onSubmit }) {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,18 +17,15 @@ function NewsletterSignup({ onSubmit, className = "" }) {
         setError("");
 
         if (!email) {
-            setError("Email is required");
+            setError("Enter your email address to subscribe.");
             return;
         }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setError("Please enter a valid email address");
+        if (!EMAIL_PATTERN.test(email)) {
+            setError("That email doesn't look right. Check for typos, e.g. name@company.com.");
             return;
         }
 
         setIsSubmitting(true);
-
         try {
             await onSubmit(email);
             setIsSubmitted(true);
@@ -33,114 +33,72 @@ function NewsletterSignup({ onSubmit, className = "" }) {
                 particleCount: 100,
                 spread: 70,
                 origin: { y: 0.6 },
+                disableForReducedMotion: true,
             });
-        } catch (err) {
-            setError("An error occurred. Please try again.");
+        } catch {
+            setError("We couldn't subscribe you just now. Please try again in a moment.");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div
-            className={`bg-secondary/50 border border-primary/10 rounded-lg p-6 ${className}`}
-        >
-            <AnimatePresence mode="wait">
+        <div aria-live="polite">
+            <AnimatePresence mode="wait" initial={false}>
                 {!isSubmitted ? (
                     <motion.form
                         key="form"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
+                        noValidate
+                        exit={{ opacity: 0 }}
                         onSubmit={handleSubmit}
-                        className="flex flex-col gap-4"
+                        className="flex flex-col gap-2"
                     >
-                        <div className="flex items-start justify-center gap-1 flex-col overflow-y-hidden">
-                            <motion.h2
-                                className="text-2xl font-bold text-foreground"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                            >
-                                Subscribe to our newsletter
-                            </motion.h2>
-                            <motion.p
-                                className="text-muted-foreground text-sm"
-                                initial={{ opacity: 0, y: 10, filter: "blur(3px)" }}
-                                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                                transition={{ delay: 0.4 }}
-                            >
-                                Stay up to date with our latest news and updates.
-                            </motion.p>
-                        </div>
-                        <div className="space-y-2">
-                            <motion.label
-                                initial={{ opacity: 0, filter: "blur(3px)" }}
-                                animate={{ opacity: 1, filter: "blur(0px)" }}
-                                transition={{ delay: 0.6 }}
-                                className="font-medium text-sm"
-                                htmlFor="email"
-                            >
-                                Email address
-                            </motion.label>
-                            <motion.div
-                                className="flex gap-2"
-                                initial={{ opacity: 0, filter: "blur(3px)" }}
-                                animate={{ opacity: 1, filter: "blur(0px)" }}
-                                transition={{ delay: 0.7 }}
-                            >
-                                <input
-                                    type="email"
-                                    id="email"
-                                    placeholder="you@example.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-md focus-visible:ring-0 focus-within:ring-0 focus:outline-white/10"
-                                />
-                                <button
+                        <label className="sr-only" htmlFor="newsletter-email">Email address</label>
+                        {/* newsletter-01 pill input */}
+                        <InputGroup className={`mx-auto h-auto w-full max-w-xl overflow-hidden rounded-full bg-background! ${error ? "border-destructive" : ""}`}>
+                            <InputGroupInput
+                                type="email"
+                                id="newsletter-email"
+                                name="email"
+                                autoComplete="email"
+                                placeholder="Email address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                aria-invalid={error ? "true" : undefined}
+                                aria-describedby={error ? "newsletter-error" : undefined}
+                                className="h-12 ps-6 text-base"
+                            />
+                            <InputGroupAddon align="inline-end" className="py-1.5 pe-1.5">
+                                <InputGroupButton
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="relative overflow-hidden text-sm flex items-center justify-center gap-2 px-4 py-2 bg-white border-black font-medium"
+                                    className="h-10 gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                                 >
-                                    <motion.div
-                                        key="default"
-                                        initial={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="flex items-center px-4"
-                                    >
-                                        <Send className="h-4 w-4" />
-                                        <span className="ml-2">Subscribe</span>
-                                    </motion.div>
-                                </button>
-                            </motion.div>
-                        </div>
-                        <AnimatePresence>
-                            {error && (
-                                <motion.p
-                                    className="text-red-500 text-sm"
-                                    initial={{ opacity: 0, y: 5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -5 }}
-                                >
-                                    {error}
-                                </motion.p>
-                            )}
-                        </AnimatePresence>
+                                    {isSubmitting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Send className="size-4" aria-hidden="true" />}
+                                    {isSubmitting ? "Subscribing…" : "Subscribe"}
+                                </InputGroupButton>
+                            </InputGroupAddon>
+                        </InputGroup>
+                        {error && (
+                            <p id="newsletter-error" className="text-center text-sm text-red-600">
+                                {error}
+                            </p>
+                        )}
                     </motion.form>
                 ) : (
                     <motion.div
                         key="success"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mx-auto flex max-w-xl items-start gap-3 rounded-2xl border border-primary/20 bg-background p-5 text-left"
                     >
-                        <h2 className="text-2xl font-bold text-foreground mb-2">
-                            Thank you for subscribing!
-                        </h2>
-                        <p className="text-muted-foreground">
-                            We&apos;ve sent a confirmation email to your inbox.
-                        </p>
+                        <CheckCircle2 className="size-6 shrink-0 text-primary" aria-hidden="true" />
+                        <div>
+                            <p className="font-semibold text-foreground">You're on the list.</p>
+                            <p className="mt-0.5 text-sm text-muted-foreground">
+                                We'll send our next update to {email}.
+                            </p>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -156,9 +114,21 @@ export default function NewsletterSection() {
     };
 
     return (
-        <section className="py-20 bg-white">
-            <div className="container mx-auto px-4 max-w-xl">
-                <NewsletterSignup onSubmit={handleSubmit} />
+        <section id="newsletter" aria-labelledby="newsletter-heading" className="bg-canvas px-4 pb-24 sm:px-6">
+            <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-secondary px-6 py-20 text-center sm:py-24">
+                <div aria-hidden="true" className="pointer-events-none absolute -left-24 -top-24 size-72 rounded-full border-[28px] border-primary/10" />
+                <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 -right-20 size-80 rounded-full border-[28px] border-primary/10" />
+                <div className="relative flex flex-col gap-10">
+                    <div className="flex flex-col gap-5">
+                        <h2 id="newsletter-heading" className="text-3xl font-semibold text-foreground sm:text-5xl">
+                            Subscribe to our newsletter
+                        </h2>
+                        <p className="mx-auto max-w-xl text-base text-muted-foreground">
+                            Practical tips on websites, design and growing online, plus news from the studio. No spam.
+                        </p>
+                    </div>
+                    <NewsletterSignup onSubmit={handleSubmit} />
+                </div>
             </div>
         </section>
     );

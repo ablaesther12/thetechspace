@@ -1,7 +1,8 @@
-import React from "react";
 import { motion } from "motion/react";
 
 // ─── Testimonial data ─────────────────────────────────────────────────────────
+// TODO(content): placeholder quotes and randomuser.me portraits; swap for real,
+// attributable client testimonials before launch.
 const testimonials = [
     {
         text: "TTS built our website in under a week and it looks stunning. Our bounce rate dropped by 40% in the first month — we couldn't be happier.",
@@ -64,53 +65,52 @@ const secondColumn = testimonials.slice(3, 6);
 const thirdColumn = testimonials.slice(6, 9);
 
 // ─── Single scrolling column ──────────────────────────────────────────────────
+// CSS loop (not JS) so it pauses on hover/focus and stops under reduced motion.
+// The second copy only exists to make the loop seamless, so it is hidden from
+// assistive tech.
 const TestimonialsColumn = ({ testimonials: items, duration = 10, className = "" }) => (
     <div className={`overflow-hidden ${className}`}>
-        <motion.div
-            animate={{ translateY: "-50%" }}
-            transition={{
-                duration,
-                repeat: Infinity,
-                ease: "linear",
-                repeatType: "loop",
-            }}
-            className="flex flex-col gap-6 pb-6"
+        <ul
+            className="animate-scroll-y flex flex-col gap-6 pb-6"
+            style={{ "--duration": `${duration}s` }}
         >
-            {/* Duplicate list to create seamless loop */}
-            {[0, 1].map((_, copy) => (
-                <React.Fragment key={copy}>
-                    {items.map(({ text, image, name, role }, i) => (
-                        <div
-                            key={i}
-                            className="p-8 rounded-3xl border border-slate-100 bg-white shadow-md shadow-slate-200/60 max-w-xs w-full"
-                        >
-                            {/* Quote marks */}
-                            <span className="text-3xl text-violet-300 leading-none select-none">"</span>
-                            <p className="text-slate-600 text-sm leading-relaxed mt-1">{text}</p>
-                            <div className="flex items-center gap-3 mt-5">
+            {[0, 1].map((copy) =>
+                items.map(({ text, image, name, role }) => (
+                    <li
+                        key={`${copy}-${name}`}
+                        aria-hidden={copy === 1 ? "true" : undefined}
+                        className="p-8 rounded-3xl border border-slate-100 bg-white shadow-md shadow-slate-200/60 max-w-xs w-full"
+                    >
+                        <figure>
+                            <blockquote className="text-slate-700 text-sm leading-relaxed">
+                                <span className="block text-3xl text-violet-400 leading-none select-none" aria-hidden="true">&ldquo;</span>
+                                {text}
+                            </blockquote>
+                            <figcaption className="flex items-center gap-3 mt-5">
                                 <img
                                     src={image}
-                                    alt={name}
+                                    alt=""
                                     width={40}
                                     height={40}
+                                    loading="lazy"
                                     className="h-10 w-10 rounded-full object-cover ring-2 ring-violet-100"
                                 />
-                                <div className="flex flex-col">
+                                <span className="flex flex-col">
                                     <span className="font-semibold text-slate-900 text-sm leading-tight">{name}</span>
-                                    <span className="text-xs text-slate-400 leading-tight mt-0.5">{role}</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </React.Fragment>
-            ))}
-        </motion.div>
+                                    <span className="text-xs text-slate-500 leading-tight mt-0.5">{role}</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+                    </li>
+                ))
+            )}
+        </ul>
     </div>
 );
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 const TestimonialsSection = () => (
-    <section className="py-24 bg-white relative overflow-hidden">
+    <section aria-labelledby="testimonials-heading" className="py-24 bg-white relative overflow-hidden">
         {/* Subtle background orbs */}
         <div
             aria-hidden="true"
@@ -130,20 +130,17 @@ const TestimonialsSection = () => (
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-col items-center text-center max-w-xl mx-auto mb-14"
             >
-                <span className="inline-block border border-violet-200 bg-violet-50 text-violet-600 text-xs font-semibold px-4 py-1.5 rounded-full tracking-wide uppercase mb-5">
-                    Testimonials
-                </span>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
+                <h2 id="testimonials-heading" className="text-4xl md:text-5xl font-bold text-slate-900">
                     What our clients say
                 </h2>
-                <p className="mt-4 text-slate-500 text-lg">
+                <p className="mt-4 text-slate-600 text-lg">
                     Don't just take our word for it — hear from the businesses we've helped grow.
                 </p>
             </motion.div>
 
             {/* Columns — fade top + bottom edges so the scroll loop is invisible */}
             <div
-                className="flex justify-center gap-6 overflow-hidden max-h-[740px]"
+                className="pause-on-hover flex justify-center gap-6 overflow-hidden max-h-[740px]"
                 style={{
                     maskImage:
                         "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",

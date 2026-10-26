@@ -1,163 +1,122 @@
-import { Linkedin, Twitter, Github } from "lucide-react";
-import Ab1 from "../assets/img/Ab1.jpg";
-import Ab2 from "../assets/img/Ab2.jpeg";
-import Ab3 from "../assets/img/Ab3.jpeg";
-import T4 from "../assets/img/T4.jpg";
+// Team — Shadcn Space team-01 grid for the people, feature-02 cards for culture.
+import { motion } from "motion/react";
+import { Lightbulb, Handshake, GraduationCap } from "lucide-react";
+import { team } from "../data/team";
+import PageHeader from "../components/ui/PageHeader";
+import { ButtonLink } from "../components/ui/primitives";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import SectionIntro from "@/components/sections/SectionIntro";
+import { FinalCta } from "../components/home/PeopleAndLabs";
+import { TeamStripVisual } from "@/components/sections/HeroVisuals";
+
+const ease = [0.21, 0.47, 0.32, 0.98];
+
+const values = [
+  { icon: Lightbulb, title: "Innovation first", body: "We encourage experimentation and embrace new technologies to stay ahead of the curve." },
+  { icon: Handshake, title: "Collaboration", body: "Every voice matters. We work together to create solutions that exceed expectations." },
+  { icon: GraduationCap, title: "Continuous learning", body: "We invest in our team's growth through training, conferences, and skill development." },
+];
 
 export default function TeamPage() {
-  const teamMembers = [
-     {
-      name: "Daniel Oppong-Boah",
-      role: "CEO & FullStack Developer",
-      specialty: "Software Developer & Web Developer",
-      bio: "Daniel crafts intuitive user experiences that convert. His designs are both beautiful and highly functional.",
-      funFact: "Sketches app ideas on napkins during lunch breaks 📱",
-      image: Ab3
-    },
-{
-      name: "Esther Abla Dzampah",
-      role: "Co-founder & Adminstrator",
-      specialty: "Frontend Developer & Graphic Designer",
-      bio: "Esther brings complex ideas to life with clean, scalable code. She's our go-to for technical architecture and optimization.",
-      funFact: "Solves coding problems while rock climbing 🧗‍♀️",
-      image: Ab2
-    },
-
-    {
-      name: "Jeffery Boafo",
-      role: "Co-Founder & Creative Director",
-      specialty: " Frontend Developer , Product Designer, Brand Strategist & Visual Design",
-      bio: "With 8+ years in creative direction, Jeffery leads our design vision and ensures every project tells a compelling story.",
-      funFact: "Coffee enthusiast who can design better after the 3rd cup ☕",
-      image: Ab1
-    },
-    
-   
-  ];
+  const leads = team.filter((m) => m.bio);
+  const rest = team.filter((m) => !m.bio);
 
   return (
-    
-    <div className="min-h-screen ">
+    <div className="bg-background">
+      <PageHeader
+        crumb="Team"
+        badge="Made in Ghana"
+        title="The people who build your project."
+        lede="A Ghanaian team of designers and developers. You talk to the same people who design, build and launch your project."
+        actions={<ButtonLink to="/contact" arrow>Book a call with us</ButtonLink>}
+        aside={<TeamStripVisual team={team} />}
+      />
 
-        <section className="relative py-50">
-              
-      
-              <img
-                src={T4}
-                alt="About Hero"
-                className="absolute top-0 left-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black opacity-30"></div> {/* Overlay for readability */}
-              <div className="container mx-auto px-4 relative z-10">
-                <div className="max-w-4xl mx-auto text-center">
-                  <span className="inline-block mb-6  bg-slate-900  text-white border border-blue-200 px-3 py-1 rounded-full text-sm font-medium">
-                     Meet Our Team
-                  </span>
-                  <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                   The Creative Minds Behind TTS
-                  </h1>
-                  <p className="text-xl text-blue-100 mb-8">
-                   Our diverse team of designers, developers, and strategists work together to create exceptional digital
-              experiences. Get to know the people who make the magic happen.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-     
-
-      {/* Team Grid */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <div
-                key={index}
-                className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden bg-white rounded-lg"
+      {/* ── team-01: founders with bios ── */}
+      <section aria-labelledby="founders-title" className="py-20 md:py-28">
+        <div className="mx-auto flex max-w-6xl flex-col gap-12 px-4 sm:px-6">
+          <SectionIntro id="founders-title" badge="Founders" title="Meet the minds behind TTS" />
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {leads.map((m, i) => (
+              <motion.article
+                key={m.name}
+                initial={{ y: 40, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: i * 0.1, ease }}
+                className="group flex flex-col gap-5"
               >
-                <div className="aspect-square relative overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={`${member.name} profile`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex space-x-3">
-                      <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
-                        <Linkedin className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
-                        <Twitter className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
-                        <Github className="h-4 w-4 text-white" />
-                      </div>
-                    </div>
-                  </div>
+                <div className="overflow-hidden rounded-2xl bg-muted">
+                  <img src={m.photo} alt={m.name} loading={i === 0 ? "eager" : "lazy"} className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-900 mb-1">{member.name}</h3>
-                  <p className="text-emerald-600 font-semibold mb-2">{member.role}</p>
-                  <span className="inline-block mb-4 bg-slate-200 text-slate-800 px-2 py-1 rounded-full text-xs font-medium">
-                    {member.specialty}
-                  </span>
-                  <p className="text-slate-600 text-sm mb-4 leading-relaxed">{member.bio}</p>
-                  <div className="bg-slate-50 rounded-lg p-3">
-                    <p className="text-xs text-slate-500 font-medium mb-1">Fun Fact:</p>
-                    <p className="text-sm text-slate-700">{member.funFact}</p>
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <h3 className="text-2xl font-semibold text-foreground">{m.name}</h3>
+                    <p className="text-sm font-medium text-primary">{m.role}</p>
                   </div>
+                  <Badge variant="outline" className="h-auto w-fit whitespace-normal px-3 py-1 text-left font-normal">{m.specialty}</Badge>
+                  <p className="text-muted-foreground">{m.bio}</p>
+                  <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Off the clock:</span> {m.funFact}</p>
                 </div>
-              </div>
+              </motion.article>
+            ))}
+          </div>
+
+          {rest.length > 0 && (
+            <div className="grid grid-cols-1 gap-6 border-t pt-12 sm:grid-cols-2">
+              {rest.map((m, i) => (
+                <motion.div
+                  key={m.name}
+                  initial={{ y: 30, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: i * 0.1, ease }}
+                >
+                  <Card className="rounded-2xl py-5">
+                    <CardContent className="flex items-center gap-5 px-5">
+                      <img src={m.photo} alt={m.name} loading="lazy" className="size-24 shrink-0 rounded-xl object-cover" />
+                      <div>
+                        <h3 className="text-xl font-semibold text-foreground">{m.name}</h3>
+                        <p className="text-sm text-muted-foreground">{m.role}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Culture (feature-02) ── */}
+      <section aria-labelledby="culture-title" className="border-y bg-card py-20 md:py-28">
+        <div className="mx-auto flex max-w-6xl flex-col gap-12 px-4 sm:px-6">
+          <SectionIntro
+            id="culture-title"
+            badge="Culture"
+            title="How we work together"
+            lede="Great work comes from great people working together in an environment that fosters creativity, collaboration, and continuous learning."
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {values.map((v) => (
+              <Card key={v.title} className="h-full rounded-2xl border-t-4 border-t-transparent py-8 transition-all duration-300 hover:border-t-primary hover:shadow-lg">
+                <CardContent className="flex flex-col gap-5 px-7">
+                  <v.icon className="size-8 text-primary" strokeWidth={1.4} aria-hidden="true" />
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-xl font-semibold text-foreground">{v.title}</h3>
+                    <p className="text-muted-foreground">{v.body}</p>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Team Culture */}
-      <section className="py-20 bg-slate-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">Our Team Culture</h2>
-            <p className="text-xl text-slate-600 mb-12">
-              We believe that great work comes from great people working together in an environment that fosters
-              creativity, collaboration, and continuous learning.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🚀</span>
-                </div>
-                <h3 className="font-bold text-slate-900 mb-2">Innovation First</h3>
-                <p className="text-slate-600 text-sm">
-                  We encourage experimentation and embrace new technologies to stay ahead of the curve.
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🤝</span>
-                </div>
-                <h3 className="font-bold text-slate-900 mb-2">Collaboration</h3>
-                <p className="text-slate-600 text-sm">
-                  Every voice matters. We work together to create solutions that exceed expectations.
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">📚</span>
-                </div>
-                <h3 className="font-bold text-slate-900 mb-2">Continuous Learning</h3>
-                <p className="text-slate-600 text-sm">
-                  We invest in our team's growth through training, conferences, and skill development.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="pt-24">
+        <FinalCta />
+      </div>
     </div>
   );
 }
