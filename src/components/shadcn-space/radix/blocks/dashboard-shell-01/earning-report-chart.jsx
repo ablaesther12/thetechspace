@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Label, Pie, PieChart } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,9 +34,6 @@ const chartConfig = {
 };
 
 export default function EarningReportChart() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
 
   const CustomerSegmentation = [
     {
